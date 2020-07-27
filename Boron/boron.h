@@ -38,6 +38,21 @@ public:
 	~Boron();
 
 public:
+	Boron& operator=(const Boron& b);
+	Boron& operator=(signed char n);
+	Boron& operator=(unsigned char n);
+	Boron& operator=(signed short n);
+	Boron& operator=(unsigned short n);
+	Boron& operator=(signed int n);
+	Boron& operator=(unsigned int n);
+	Boron& operator=(signed long n);
+	Boron& operator=(unsigned long n);
+	Boron& operator=(signed long long n);
+	Boron& operator=(unsigned long long n);
+	Boron& operator=(const char* s);
+	Boron& operator=(std::string s);
+
+public:
 	Boron operator-();
 	Boron operator+(const Boron& rhs);
 	Boron operator-(const Boron& rhs);
@@ -57,6 +72,22 @@ public:
 	Boron operator>>=(const Boron& rhs);
 	Boron operator&=(const Boron& rhs);
 	Boron operator|=(const Boron& rhs);
+
+public:
+	bool operator>(const Boron& rhs);
+	bool operator>=(const Boron& rhs);
+	bool operator<(const Boron& rhs);
+	bool operator<=(const Boron& rhs);
+	bool operator==(const Boron& rhs);
+	bool operator!=(const Boron& rhs);
+
+public:
+	Boron pow() const;
+	Boron gcd() const;
+	Boron lcm() const;
+
+public:
+	std::string toString(int base = 10);
 };
 
 }

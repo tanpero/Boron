@@ -51,6 +51,22 @@ Boron::Boron(unsigned int n)
 	data = { n };
 }
 
+Boron::Boron(signed long n)
+{
+}
+
+Boron::Boron(unsigned long n)
+{
+}
+
+Boron::Boron(signed long long n)
+{
+}
+
+Boron::Boron(unsigned long long n)
+{
+}
+
 Boron::Boron(const char* s, int base)
 {
 }
@@ -63,6 +79,32 @@ Boron::~Boron()
 {
 }
 
+Boron& Boron::operator=(const Boron& b)
+{
+	this->sign = b.sign;
+	this->data = std::move(b.data);
+	return *this;
+}
+
+
+#define make_assignment(type)     \
+Boron& Boron::operator=(type n)   \
+{                                 \
+	*this = std::move(Boron(n));  \
+	return *this;                 \
+} 
+
+make_assignment(signed char)
+make_assignment(unsigned char)
+make_assignment(signed short)
+make_assignment(unsigned short)
+make_assignment(signed int)
+make_assignment(unsigned int)
+make_assignment(signed long)
+make_assignment(unsigned long)
+make_assignment(signed long long)
+make_assignment(unsigned long long)
+
 Boron Boron::operator-()
 {
 	Boron& b = *this;
@@ -73,7 +115,7 @@ Boron Boron::operator-()
 Boron Boron::operator+(const Boron& rhs)
 {
 	const Boron& lhs = *this;
-	Boron& b{};
+	Boron b{};
 
 	const std::vector<unsigned>& lhs_data = std::move(lhs.data);
 	const std::vector<unsigned>& rhs_data = std::move(rhs.data);

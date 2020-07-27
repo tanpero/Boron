@@ -2,6 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Hello world" << std::endl;
+	using namespace boron;
+	std::cout << "Hello Boron!" << std::endl;
 	return 0;
 }
