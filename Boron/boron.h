@@ -13,6 +13,8 @@ namespace boron
 class Boron
 {
 	std::vector<unsigned> data;
+
+	// 0 为正，1 为负
 	bool sign;
 
 public:
@@ -32,6 +34,7 @@ public:
 	Boron(std::string s, int base = 10);
 
 	~Boron();
+
 };
 
 }

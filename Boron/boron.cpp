@@ -5,51 +5,50 @@ namespace boron
 
 Boron::Boron()
 {
-
+	sign = 0;
+	data = { 0 };
 }
 
 Boron::Boron(const Boron& b)
 {
+	sign = b.sign;
+	data = std::move(b).data;
 }
-
+              
 Boron::Boron(signed char n)
 {
+	sign = n < 0;
+	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
 Boron::Boron(unsigned char n)
 {
+	sign = 0;
+	data = { static_cast<unsigned>(n) };
 }
 
 Boron::Boron(signed short n)
 {
+	sign = n < 0;
+	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
 Boron::Boron(unsigned short n)
 {
+	sign = 0;
+	data = { static_cast<unsigned>(n) };
 }
 
 Boron::Boron(signed int n)
 {
+	sign = n < 0;
+	data = { (unsigned)std::abs(n) };
 }
 
 Boron::Boron(unsigned int n)
 {
-}
-
-Boron::Boron(signed long n)
-{
-}
-
-Boron::Boron(unsigned long n)
-{
-}
-
-Boron::Boron(signed long long n)
-{
-}
-
-Boron::Boron(unsigned long long n)
-{
+	sign = 0;
+	data = { n };
 }
 
 Boron::Boron(const char* s, int base)
