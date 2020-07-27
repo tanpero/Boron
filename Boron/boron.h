@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <bitset>
+#include <algorithm>
 
 namespace boron
 {
@@ -15,6 +16,7 @@ class Boron
 	std::vector<unsigned> data;
 
 	// 0 为正，1 为负
+	bool POS = 0, NEG = 1;
 	bool sign;
 
 public:
@@ -35,6 +37,26 @@ public:
 
 	~Boron();
 
+public:
+	Boron operator-();
+	Boron operator+(const Boron& rhs);
+	Boron operator-(const Boron& rhs);
+	Boron operator*(const Boron& rhs);
+	Boron operator/(const Boron& rhs);
+	Boron operator%(const Boron& rhs);
+	Boron operator<<(const Boron& rhs);
+	Boron operator>>(const Boron& rhs);
+	Boron operator&(const Boron& rhs);
+	Boron operator|(const Boron& rhs);
+	Boron operator+=(const Boron& rhs);
+	Boron operator-=(const Boron& rhs);
+	Boron operator*=(const Boron& rhs);
+	Boron operator/=(const Boron& rhs);
+	Boron operator%=(const Boron& rhs);
+	Boron operator<<=(const Boron& rhs);
+	Boron operator>>=(const Boron& rhs);
+	Boron operator&=(const Boron& rhs);
+	Boron operator|=(const Boron& rhs);
 };
 
 }
