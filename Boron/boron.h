@@ -53,16 +53,16 @@ public:
 	Boron& operator=(std::string s);
 
 public:
-	Boron operator-();
-	Boron operator+(const Boron& rhs);
-	Boron operator-(const Boron& rhs);
-	Boron operator*(const Boron& rhs);
-	Boron operator/(const Boron& rhs);
-	Boron operator%(const Boron& rhs);
-	Boron operator<<(const Boron& rhs);
-	Boron operator>>(const Boron& rhs);
-	Boron operator&(const Boron& rhs);
-	Boron operator|(const Boron& rhs);
+	Boron operator-() const;
+	Boron operator+(const Boron& rhs) const;
+	Boron operator-(const Boron& rhs) const;
+	Boron operator*(const Boron& rhs) const;
+	Boron operator/(const Boron& rhs) const;
+	Boron operator%(const Boron& rhs) const;
+	Boron operator<<(const Boron& rhs) const;
+	Boron operator>>(const Boron& rhs) const;
+	Boron operator&(const Boron& rhs) const;
+	Boron operator|(const Boron& rhs) const;
 	Boron operator+=(const Boron& rhs);
 	Boron operator-=(const Boron& rhs);
 	Boron operator*=(const Boron& rhs);
@@ -74,17 +74,17 @@ public:
 	Boron operator|=(const Boron& rhs);
 
 public:
-	bool operator>(const Boron& rhs);
-	bool operator>=(const Boron& rhs);
-	bool operator<(const Boron& rhs);
-	bool operator<=(const Boron& rhs);
-	bool operator==(const Boron& rhs);
-	bool operator!=(const Boron& rhs);
+	bool operator>(const Boron& rhs) const;
+	bool operator>=(const Boron& rhs) const;
+	bool operator<(const Boron& rhs) const;
+	bool operator<=(const Boron& rhs) const;
+	bool operator==(const Boron& rhs) const;
+	bool operator!=(const Boron& rhs) const;
 
 public:
-	Boron pow() const;
-	Boron gcd() const;
-	Boron lcm() const;
+	Boron& pow() const;
+	Boron& gcd() const;
+	Boron& lcm() const;
 
 public:
 	std::string toString(int base = 10);

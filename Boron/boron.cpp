@@ -79,10 +79,11 @@ Boron::~Boron()
 {
 }
 
+
 Boron& Boron::operator=(const Boron& b)
 {
 	this->sign = b.sign;
-	this->data = std::move(b.data);
+	this->data = b.data;
 	return *this;
 }
 
@@ -105,20 +106,22 @@ make_assignment(unsigned long)
 make_assignment(signed long long)
 make_assignment(unsigned long long)
 
-Boron Boron::operator-()
+#undef make_assignment
+
+Boron Boron::operator-() const
 {
-	Boron& b = *this;
+	Boron b = *this;
 	b.sign = !b.sign;
 	return b;
 }
 
-Boron Boron::operator+(const Boron& rhs)
+Boron Boron::operator+(const Boron& rhs) const
 {
 	const Boron& lhs = *this;
 	Boron b{};
 
-	const std::vector<unsigned>& lhs_data = std::move(lhs.data);
-	const std::vector<unsigned>& rhs_data = std::move(rhs.data);
+	const std::vector<unsigned>& lhs_data = lhs.data;
+	const std::vector<unsigned>& rhs_data = rhs.data;
 	std::vector<unsigned> result_data = { 0 };
 	size_t lhs_size = lhs_data.size();
 	size_t rhs_size = rhs_data.size();
@@ -166,7 +169,9 @@ Boron Boron::operator+(const Boron& rhs)
 
 Boron Boron::operator+=(const Boron& rhs)
 {
-	return Boron();
+	*this = *this + rhs;
+	return *this;
 }
+
 
 }
