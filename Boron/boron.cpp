@@ -51,20 +51,62 @@ Boron::Boron(unsigned int n)
 	data = { n };
 }
 
-Boron::Boron(signed long n)
+Boron::Boron(signed long _n)
 {
+	sign = _n < 0;
+	unsigned long n = (unsigned long)std::abs(_n);
+	unsigned long criticalValue = (unsigned long)UINT_MAX;
+	if (n <= criticalValue)
+	{
+		data = { (unsigned)n };
+	}
+	else
+	{
+		data = { (unsigned)n >> 32, (unsigned)n };
+	}
 }
 
 Boron::Boron(unsigned long n)
 {
+	sign = 0;
+	unsigned long criticalValue = (unsigned long)UINT_MAX;
+	if (n <= criticalValue)
+	{
+		data = { (unsigned)n };
+	}
+	else
+	{
+		data = { (unsigned)n >> 32, (unsigned)n };
+	}
 }
 
-Boron::Boron(signed long long n)
+Boron::Boron(signed long long _n)
 {
+	sign = _n < 0;
+	unsigned long long n = (unsigned long long)std::abs(_n);
+	unsigned long long criticalValue = (unsigned long long)UINT_MAX;
+	if (n <= criticalValue)
+	{
+		data = { (unsigned)n };
+	}
+	else
+	{
+		data = { (unsigned)n >> 32, (unsigned)n };
+	}
 }
 
 Boron::Boron(unsigned long long n)
 {
+	sign = 0;
+	unsigned long criticalValue = (unsigned long)UINT_MAX;
+	if (n <= criticalValue)
+	{
+		data = { (unsigned)n };
+	}
+	else
+	{
+		data = { (unsigned)n >> 32, (unsigned)n };
+	}
 }
 
 Boron::Boron(const char* s, int base)

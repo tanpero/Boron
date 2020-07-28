@@ -102,7 +102,7 @@ public:
 public:
 	void clear();
 	size_t digits()                           const;
-	size_t sectionAmount()                         const;
+	size_t sectionAmount()                    const;
 	unsigned sectionAt(size_t offset)         const;
 	unsigned bitAt(size_t sec, size_t offset) const;
 	unsigned bitAt(size_t offset)             const;
