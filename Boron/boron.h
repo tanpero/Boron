@@ -112,24 +112,52 @@ public:
 };
 
 // 获取数值 x 第 n 位的值
-constexpr inline unsigned get_bit(unsigned x, unsigned n) {
+constexpr inline unsigned get_bit(unsigned x, unsigned n)
+{
 	return (x >> n) & 1;
 }
 
 // 将 x 第 n 位的值设置为 a
-constexpr inline unsigned set_bit(unsigned x, unsigned n, unsigned a) {
+constexpr inline unsigned set_bit(unsigned x, unsigned n, unsigned a)
+{
 	return x ^= (x & (1 << n)) ^ (a << n);
 }
 
 // 求 n 的二进制位数
-constexpr inline unsigned length_of_bits(unsigned n) {
-	int c = 0;
-	while (n)
+constexpr inline unsigned length_of_bits(unsigned n)
+{
+	int pow_of_2[32] =
 	{
-		++c;
-		n >>= 1;
+				 1,           2,           4,           8,         16,          32,
+				64,         128,         256,         512,       1024,        2048,
+			  4096,        8192,       16384,       32768,      65536,      131072,
+			262144,      524288,     1048576,     2097152,    4194304,     8388608,
+		  16777216,    33554432,    67108864,   134217728,  268435456,   536870912,
+		1073741824,  2147483648
+	};
+
+	int left = 0,
+		right = 31;
+
+	while (left <= right)
+	{
+		int mid = (left + right) / 2;
+		if (pow_of_2[mid] <= n)
+		{
+			if (pow_of_2[mid + 1] > n)
+			{
+				return mid + 1;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		else
+		{
+			right = mid - 1;
+		}
 	}
-	return c;
 }
 
 }

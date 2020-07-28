@@ -201,7 +201,7 @@ unsigned Boron::bitAt(size_t offset) const
 
 std::vector<unsigned> Boron::getData() const
 {
-	return std::move(data);
+	return data;
 }
 
 std::string Boron::toString(int base)
