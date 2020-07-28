@@ -101,14 +101,36 @@ public:
 
 public:
 	void clear();
-	size_t digits;
-	unsigned sectionAt(size_t);
+	size_t digits()                           const;
+	unsigned sectionAt(size_t)                const;
+	unsigned bitAt(size_t sec, size_t offset) const;
+	unsigned bitAt(size_t offset)             const;
+	std::vector<unsigned> getData()           const;
 
 public:
 	std::string toString(int base = 10);
 };
 
+// 获取数值 x 第 n 位的值
+constexpr inline unsigned get_bit(unsigned x, unsigned n) {
+	return (x >> n) & 1;
+}
 
+// 将 x 第 n 位的值设置为 a
+constexpr inline unsigned set_bit(unsigned x, unsigned n, unsigned a) {
+	return x ^= (x & (1 << n)) ^ (a << n);
+}
+
+// 求 n 的二进制位数
+constexpr inline unsigned length_of_bits(unsigned n) {
+	int c = 0;
+	while (n)
+	{
+		++c;
+		n >>= 1;
+	}
+	return c;
+}
 
 }
 

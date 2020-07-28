@@ -115,13 +115,16 @@ Boron Boron::operator-() const
 	return b;
 }
 
+/*
 Boron Boron::operator+(const Boron& rhs) const
 {
 	Boron temp = *this;
 	temp += rhs;
 	return temp;
 }
+*/
 
+/*
 Boron Boron::operator+=(const Boron& rhs)
 {
 
@@ -172,12 +175,33 @@ Boron Boron::operator+=(const Boron& rhs)
 	b.data = result_data;
 	return b;
 }
-
+*/
 
 void Boron::clear()
 {
 	data = { 0 };
 	sign = 0;
+}
+
+unsigned Boron::bitAt(size_t sec, size_t offset) const
+{
+	return get_bit(data.at(data.size() - 1 - sec), offset);
+}
+
+unsigned Boron::bitAt(size_t offset) const
+{
+	if (offset < 32)
+	{
+		return get_bit(data.at(data.size() - 1), offset);
+	}
+	size_t restOffset = offset % 32;
+	size_t sec = (offset - restOffset) / 32;
+	return bitAt(sec, restOffset);
+}
+
+std::vector<unsigned> Boron::getData() const
+{
+	return std::move(data);
 }
 
 std::string Boron::toString(int base)
@@ -193,6 +217,11 @@ std::string Boron::toString(int base)
 		s += std::to_string(data.at(i));
 	}
 	return s;
+}
+
+Boron Boron::operator<<(const Boron& rhs) const
+{
+	return Boron();
 }
 
 }
