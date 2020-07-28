@@ -102,7 +102,8 @@ public:
 public:
 	void clear();
 	size_t digits()                           const;
-	unsigned sectionAt(size_t)                const;
+	size_t sectionAmount()                         const;
+	unsigned sectionAt(size_t offset)         const;
 	unsigned bitAt(size_t sec, size_t offset) const;
 	unsigned bitAt(size_t offset)             const;
 	std::vector<unsigned> getData()           const;

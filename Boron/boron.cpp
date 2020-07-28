@@ -183,16 +183,39 @@ void Boron::clear()
 	sign = 0;
 }
 
+size_t Boron::digits() const
+{
+	size_t size = sectionAmount();
+	if (size == 1)
+	{
+		return length_of_bits(sectionAt(0));
+	}
+	else
+	{
+		return 32 * (size - 1) + length_of_bits(sectionAt(0));
+	}
+}
+
+size_t Boron::sectionAmount() const
+{
+	return data.size();
+}
+
+unsigned Boron::sectionAt(size_t offset) const
+{
+	return data.at(offset);
+}
+
 unsigned Boron::bitAt(size_t sec, size_t offset) const
 {
-	return get_bit(data.at(data.size() - 1 - sec), offset);
+	return get_bit(sectionAt(sectionAmount() - 1 - sec), offset);
 }
 
 unsigned Boron::bitAt(size_t offset) const
 {
 	if (offset < 32)
 	{
-		return get_bit(data.at(data.size() - 1), offset);
+		return get_bit(sectionAt(sectionAmount() - 1), offset);
 	}
 	size_t restOffset = offset % 32;
 	size_t sec = (offset - restOffset) / 32;
