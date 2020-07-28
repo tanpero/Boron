@@ -6,6 +6,7 @@
 #include <vector>
 #include <bitset>
 #include <algorithm>
+#include <cmath>
 
 namespace boron
 {
@@ -53,42 +54,61 @@ public:
 	Boron& operator=(std::string s);
 
 public:
-	Boron operator-() const;
-	Boron operator+(const Boron& rhs) const;
-	Boron operator-(const Boron& rhs) const;
-	Boron operator*(const Boron& rhs) const;
-	Boron operator/(const Boron& rhs) const;
-	Boron operator%(const Boron& rhs) const;
-	Boron operator<<(const Boron& rhs) const;
-	Boron operator>>(const Boron& rhs) const;
-	Boron operator&(const Boron& rhs) const;
-	Boron operator|(const Boron& rhs) const;
-	Boron operator+=(const Boron& rhs);
-	Boron operator-=(const Boron& rhs);
-	Boron operator*=(const Boron& rhs);
-	Boron operator/=(const Boron& rhs);
-	Boron operator%=(const Boron& rhs);
+	Boron operator++ ();
+	Boron operator++ (int);
+	Boron operator-- ();
+	Boron operator-- (int);
+	Boron operator-  ()                 const;
+	Boron operator+  (const Boron& rhs) const;
+	Boron operator-  (const Boron& rhs) const;
+	Boron operator*  (const Boron& rhs) const;
+	Boron operator/  (const Boron& rhs) const;
+	Boron operator%  (const Boron& rhs) const;
+	Boron operator<< (const Boron& rhs) const;
+	Boron operator>> (const Boron& rhs) const;
+	Boron operator&  (const Boron& rhs) const;
+	Boron operator|  (const Boron& rhs) const;
+	Boron operator^  (const Boron& rhs) const;
+	Boron operator~  ()                 const;
+	Boron operator+= (const Boron& rhs);
+	Boron operator-= (const Boron& rhs);
+	Boron operator*= (const Boron& rhs);
+	Boron operator/= (const Boron& rhs);
+	Boron operator%= (const Boron& rhs);
 	Boron operator<<=(const Boron& rhs);
 	Boron operator>>=(const Boron& rhs);
-	Boron operator&=(const Boron& rhs);
-	Boron operator|=(const Boron& rhs);
+	Boron operator&= (const Boron& rhs);
+	Boron operator|= (const Boron& rhs);
+	Boron operator^= (const Boron& rhs);
 
 public:
-	bool operator>(const Boron& rhs) const;
+	bool operator>(const Boron& rhs)  const;
 	bool operator>=(const Boron& rhs) const;
-	bool operator<(const Boron& rhs) const;
+	bool operator<(const Boron& rhs)  const;
 	bool operator<=(const Boron& rhs) const;
 	bool operator==(const Boron& rhs) const;
 	bool operator!=(const Boron& rhs) const;
 
 public:
-	Boron& pow() const;
-	Boron& gcd() const;
-	Boron& lcm() const;
+	friend Boron pow(Boron& a, Boron& b);
+	friend Boron gcd(Boron& a, Boron& b);
+	friend Boron lcm(Boron& a, Boron& b);
+	friend Boron intSqrt(Boron& n);
+	friend Boron sqrt(Boron& n, Boron& accuracy);
+	friend Boron max(Boron& a, Boron& b);
+	friend Boron min(Boron& a, Boron& b);
+
+
+public:
+	void clear();
+	size_t digits;
+	unsigned sectionAt(size_t);
 
 public:
 	std::string toString(int base = 10);
 };
+
+
 
 }
 

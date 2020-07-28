@@ -3,9 +3,8 @@
 int main(int argc, char* argv[])
 {
 	using namespace boron;
-	Boron a(100);
+	Boron a(0xffffffff);
 	Boron b(200);
-	Boron c(a + b);
-	std::cout << "Hello Boron!" << std::endl;
+	std::cout << a.toString() << " + " << b.toString() << " = " << (a + b).toString() << std::endl;
 	return 0;
 }

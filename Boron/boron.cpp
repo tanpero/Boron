@@ -117,16 +117,21 @@ Boron Boron::operator-() const
 
 Boron Boron::operator+(const Boron& rhs) const
 {
-	const Boron& lhs = *this;
-	Boron b{};
+	Boron temp = *this;
+	temp += rhs;
+	return temp;
+}
 
-	const std::vector<unsigned>& lhs_data = lhs.data;
+Boron Boron::operator+=(const Boron& rhs)
+{
+
+	const std::vector<unsigned>& lhs_data = data;
 	const std::vector<unsigned>& rhs_data = rhs.data;
 	std::vector<unsigned> result_data = { 0 };
 	size_t lhs_size = lhs_data.size();
 	size_t rhs_size = rhs_data.size();
 
-	if (lhs.sign == rhs.sign)
+	if (sign == rhs.sign)
 	{
 
 		for (int i = 1; i <= std::min(lhs_size, rhs_size); i += 1)
@@ -139,7 +144,7 @@ Boron Boron::operator+(const Boron& rhs) const
 			if (UINT_MAX - lhs_section > rhs_section)
 			{
 				// 最大值减去 lhs 段的差大于 rhs 段，则两段相加不会溢出
-				result_data.emplace_back(lhs_section + rhs_section + result_section);
+				result_data.insert(result_data.begin(), lhs_section + rhs_section + result_section);
 			}
 			else
 			{
@@ -148,13 +153,14 @@ Boron Boron::operator+(const Boron& rhs) const
 					rhs_temp = rhs_section & (~(1 << 1)),
 					result_temp = lhs_temp + rhs_temp;
 
+				result_data.insert(result_data.begin(), result_temp);
+
 				// 向 result 的高位段进 1 位
-				result_data.emplace_back(1);
-				result_data.emplace_back(result_temp);
+				result_data.insert(result_data.begin(), 1);
 
 			}
 		}
-		
+
 		b.sign == b.sign || POS;
 
 	}
@@ -163,15 +169,30 @@ Boron Boron::operator+(const Boron& rhs) const
 		// TODO...
 	}
 
-	b.data = std::move(result_data);
+	b.data = result_data;
 	return b;
 }
 
-Boron Boron::operator+=(const Boron& rhs)
+
+void Boron::clear()
 {
-	*this = *this + rhs;
-	return *this;
+	data = { 0 };
+	sign = 0;
 }
 
+std::string Boron::toString(int base)
+{
+	if (data.size() == 1)
+	{
+		return std::to_string(data.at(0));
+	}
+	std::string s;
+	for (size_t i = 0, length = data.size(); i < length; i += 1)
+	{
+		std::cout << std::to_string(data.at(i)) << "\n";
+		s += std::to_string(data.at(i));
+	}
+	return s;
+}
 
 }
