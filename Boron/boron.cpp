@@ -15,47 +15,47 @@ Boron::Boron(const Boron& b)
 	data = std::move(b).data;
 }
               
-Boron::Boron(signed char n)
+Boron::Boron(int8_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Boron::Boron(unsigned char n)
+Boron::Boron(uint8_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Boron::Boron(signed short n)
+Boron::Boron(int16_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Boron::Boron(unsigned short n)
+Boron::Boron(uint16_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Boron::Boron(signed int n)
+Boron::Boron(int32_t n)
 {
 	sign = n < 0;
 	data = { (unsigned)std::abs(n) };
 }
 
-Boron::Boron(unsigned int n)
+Boron::Boron(uint32_t n)
 {
 	sign = 0;
 	data = { n };
 }
 
-Boron::Boron(signed long _n)
+Boron::Boron(int64_t _n)
 {
 	sign = _n < 0;
-	unsigned long n = (unsigned long)std::abs(_n);
-	unsigned long criticalValue = (unsigned long)UINT_MAX;
+	uint64_t n = (uint64_t)std::abs(_n);
+	uint64_t criticalValue = (uint64_t)UINT_MAX;
 	if (n <= criticalValue)
 	{
 		data = { (unsigned)n };
@@ -66,39 +66,10 @@ Boron::Boron(signed long _n)
 	}
 }
 
-Boron::Boron(unsigned long n)
+Boron::Boron(uint64_t n)
 {
 	sign = 0;
-	unsigned long criticalValue = (unsigned long)UINT_MAX;
-	if (n <= criticalValue)
-	{
-		data = { (unsigned)n };
-	}
-	else
-	{
-		data = { (unsigned)n >> 32, (unsigned)n };
-	}
-}
-
-Boron::Boron(signed long long _n)
-{
-	sign = _n < 0;
-	unsigned long long n = (unsigned long long)std::abs(_n);
-	unsigned long long criticalValue = (unsigned long long)UINT_MAX;
-	if (n <= criticalValue)
-	{
-		data = { (unsigned)n };
-	}
-	else
-	{
-		data = { (unsigned)n >> 32, (unsigned)n };
-	}
-}
-
-Boron::Boron(unsigned long long n)
-{
-	sign = 0;
-	unsigned long criticalValue = (unsigned long)UINT_MAX;
+	uint64_t criticalValue = (uint64_t)UINT_MAX;
 	if (n <= criticalValue)
 	{
 		data = { (unsigned)n };
@@ -137,16 +108,16 @@ Boron& Boron::operator=(type n)   \
 	return *this;                 \
 } 
 
-make_assignment(signed char)
-make_assignment(unsigned char)
-make_assignment(signed short)
-make_assignment(unsigned short)
-make_assignment(signed int)
-make_assignment(unsigned int)
-make_assignment(signed long)
-make_assignment(unsigned long)
-make_assignment(signed long long)
-make_assignment(unsigned long long)
+make_assignment(int8_t)
+make_assignment(uint8_t)
+make_assignment(int16_t)
+make_assignment(uint16_t)
+make_assignment(int32_t)
+make_assignment(uint32_t)
+make_assignment(int64_t)
+make_assignment(uint64_t)
+make_assignment(int64_t)
+make_assignment(uint64_t)
 
 #undef make_assignment
 
@@ -269,7 +240,7 @@ std::vector<unsigned> Boron::getData() const
 	return data;
 }
 
-std::string Boron::toString(int base)
+std::string Boron::toString(int base) const
 {
 	if (data.size() == 1)
 	{
@@ -286,7 +257,18 @@ std::string Boron::toString(int base)
 
 Boron Boron::operator<<(const Boron& rhs) const
 {
-	return Boron();
+	Boron temp = *this;
+	temp <<= rhs;
+	return temp;
+}
+
+Boron Boron::operator<<=(const Boron& rhs)
+{
+	// 如果左移的位数不致超过最高段
+	if (length_of_bits(data[0]) > rhs)
+	{
+		data[0] <<= rhs.getUInt32();
+	}
 }
 
 }

@@ -23,16 +23,14 @@ class Boron
 public:
 	Boron();
 	Boron(const Boron& b);
-	Boron(signed char n);
-	Boron(unsigned char n);
-	Boron(signed short n);
-	Boron(unsigned short n);
-	Boron(signed int n);
-	Boron(unsigned int n);
-	Boron(signed long n);
-	Boron(unsigned long n);
-	Boron(signed long long n);
-	Boron(unsigned long long n);
+	Boron(int8_t n);
+	Boron(uint8_t n);
+	Boron(int16_t n);
+	Boron(uint16_t n);
+	Boron(int32_t n);
+	Boron(uint32_t n);
+	Boron(int64_t n);
+	Boron(uint64_t n);
 	Boron(const char* s, int base = 10);
 	Boron(std::string s, int base = 10);
 
@@ -40,16 +38,14 @@ public:
 
 public:
 	Boron& operator=(const Boron& b);
-	Boron& operator=(signed char n);
-	Boron& operator=(unsigned char n);
-	Boron& operator=(signed short n);
-	Boron& operator=(unsigned short n);
-	Boron& operator=(signed int n);
-	Boron& operator=(unsigned int n);
-	Boron& operator=(signed long n);
-	Boron& operator=(unsigned long n);
-	Boron& operator=(signed long long n);
-	Boron& operator=(unsigned long long n);
+	Boron& operator=(int8_t n);
+	Boron& operator=(uint8_t n);
+	Boron& operator=(int16_t n);
+	Boron& operator=(uint16_t n);
+	Boron& operator=(int32_t n);
+	Boron& operator=(uint32_t n);
+	Boron& operator=(int64_t n);
+	Boron& operator=(uint64_t n);
 	Boron& operator=(const char* s);
 	Boron& operator=(std::string s);
 
@@ -82,14 +78,13 @@ public:
 	Boron operator^= (const Boron& rhs);
 
 public:
-	bool operator>(const Boron& rhs)  const;
-	bool operator>=(const Boron& rhs) const;
-	bool operator<(const Boron& rhs)  const;
-	bool operator<=(const Boron& rhs) const;
-	bool operator==(const Boron& rhs) const;
-	bool operator!=(const Boron& rhs) const;
+	friend bool operator>(const Boron& lhs, const Boron& rhs);
+	friend bool operator>=(const Boron& lhs, const Boron& rhs);
+	friend bool operator<(const Boron& lhs, const Boron& rhs);
+	friend bool operator<=(const Boron& lhs, const Boron& rhs);
+	friend bool operator==(const Boron& lhs, const Boron& rhs);
+	friend bool operator!=(const Boron& lhs, const Boron& rhs);
 
-public:
 	friend Boron pow(Boron& a, Boron& b);
 	friend Boron gcd(Boron& a, Boron& b);
 	friend Boron lcm(Boron& a, Boron& b);
@@ -109,25 +104,26 @@ public:
 	std::vector<unsigned> getData()           const;
 
 public:
-	std::string toString(int base = 10);
+	std::string toString(int base = 10)       const;
+	uint32_t getUInt32()                       const;
 };
 
 // 获取数值 x 第 n 位的值
-constexpr inline unsigned get_bit(unsigned x, unsigned n)
+constexpr inline uint32_t get_bit(unsigned x, unsigned n)
 {
 	return (x >> n) & 1;
 }
 
 // 将 x 第 n 位的值设置为 a
-constexpr inline unsigned set_bit(unsigned x, unsigned n, unsigned a)
+constexpr inline uint32_t set_bit(unsigned x, unsigned n, unsigned a)
 {
 	return x ^= (x & (1 << n)) ^ (a << n);
 }
 
 // 求 n 的二进制位数
-constexpr inline unsigned length_of_bits(unsigned n)
+constexpr inline uint32_t length_of_bits(unsigned n)
 {
-	int pow_of_2[32] =
+	int32_t pow_of_2[32] =
 	{
 				 1,           2,           4,           8,         16,          32,
 				64,         128,         256,         512,       1024,        2048,
@@ -137,7 +133,7 @@ constexpr inline unsigned length_of_bits(unsigned n)
 		1073741824,  2147483648
 	};
 
-	int left = 0,
+	int32_t left = 0,
 		right = 31;
 
 	while (left <= right)
