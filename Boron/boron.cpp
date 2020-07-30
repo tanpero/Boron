@@ -240,6 +240,18 @@ std::vector<unsigned> Boron::getData() const
 	return data;
 }
 
+void Boron::eachSection(std::function<bool(size_t&, uint32_t)> execution) const
+{
+	for (size_t i = 0, last = sectionAmount(); i < last; i += 1)
+	{
+		size_t cursor = last - 1 - i;
+		if (!execution(i, sectionAt(cursor)))
+		{
+			return;
+		}
+	}
+}
+
 std::string Boron::toString(int base) const
 {
 	if (data.size() == 1)
@@ -268,6 +280,12 @@ Boron Boron::operator<<=(const Boron& rhs)
 	if (length_of_bits(data[0]) > rhs)
 	{
 		data[0] <<= rhs.getUInt32();
+	}
+	else if (rhs <= 32)
+	{
+		eachSection([&](size_t i, uint32_t section) -> bool{
+
+		});
 	}
 }
 

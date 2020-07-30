@@ -7,10 +7,14 @@
 #include <bitset>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace boron
 {
 
+
+struct Division;
+struct Decimal;
 
 class Boron
 {
@@ -78,6 +82,11 @@ public:
 	Boron operator^= (const Boron& rhs);
 
 public:
+	Division divmod(Boron rhs);
+	Decimal div(Boron precision = 8);
+	Boron modpow(Boron base, Boron exponent, Boron modular);
+
+public:
 	friend bool operator>(const Boron& lhs, const Boron& rhs);
 	friend bool operator>=(const Boron& lhs, const Boron& rhs);
 	friend bool operator<(const Boron& lhs, const Boron& rhs);
@@ -102,6 +111,7 @@ public:
 	unsigned bitAt(size_t sec, size_t offset) const;
 	unsigned bitAt(size_t offset)             const;
 	std::vector<unsigned> getData()           const;
+	void eachSection(std::function<bool(size_t&, uint32_t)> executer) const;
 
 public:
 	std::string toString(int base = 10)       const;
