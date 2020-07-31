@@ -214,25 +214,31 @@ size_t Boron::sectionAmount() const
 	return data.size();
 }
 
+// 段的逻辑索引，而非在 vector 中的实际位置
 unsigned Boron::sectionAt(size_t offset) const
 {
-	return data.at(offset);
+	return data.at(sectionAmount() - 1 - offset);
 }
 
 unsigned Boron::bitAt(size_t sec, size_t offset) const
 {
-	return get_bit(sectionAt(sectionAmount() - 1 - sec), offset);
+	return get_bit(sectionAt(sec), offset);
 }
 
 unsigned Boron::bitAt(size_t offset) const
 {
 	if (offset < 32)
 	{
-		return get_bit(sectionAt(sectionAmount() - 1), offset);
-	}
+		return get_bit(sectionAt(0), offset);
+	} 
 	size_t restOffset = offset % 32;
 	size_t sec = (offset - restOffset) / 32;
 	return bitAt(sec, restOffset);
+}
+
+uint32_t Boron::highestSection() const
+{
+	return sectionAt(sectionAmount() - 1);
 }
 
 std::vector<unsigned> Boron::getData() const
@@ -240,12 +246,11 @@ std::vector<unsigned> Boron::getData() const
 	return data;
 }
 
-void Boron::eachSection(std::function<bool(size_t&, uint32_t)> execution) const
+void Boron::eachSection(std::function<bool(size_t, uint32_t)> execution) const
 {
 	for (size_t i = 0, last = sectionAmount(); i < last; i += 1)
 	{
-		size_t cursor = last - 1 - i;
-		if (!execution(i, sectionAt(cursor)))
+		if (!execution(i, sectionAt(i)))
 		{
 			return;
 		}
@@ -287,6 +292,110 @@ Boron Boron::operator<<=(const Boron& rhs)
 
 		});
 	}
+}
+
+Boron Boron::modpow(Boron exponent, Boron modular)
+{
+	Boron base = *this;
+	if (modular == 1)
+	{
+		return 0;
+	}
+	else
+	{
+		Boron r = 1;
+		base %= modular;
+		while (exponent > 0)
+		{
+			if (exponent % 2 == 1)
+			{
+				r = (r * base) % modular;
+			}
+			exponent >>= 1;
+			base = (base * base) % modular;
+		}
+		return r;
+	}
+}
+
+Boron gcd(Boron& a, Boron& b)
+{
+	Boron old_s = 1, s = 0,
+		old_t = 0, t = 1,
+		old_r = a, r = b;
+	
+}
+
+bool operator>(const Boron& lhs, const Boron& rhs)
+{
+	size_t lhsSecAmount = lhs.sectionAmount();
+	size_t rhsSecAmount = rhs.sectionAmount();
+
+	// 如果段数不同，则段数更大的显然数值更大
+	if (lhsSecAmount != rhsSecAmount)
+	{
+		return lhsSecAmount > rhsSecAmount;
+	}
+	else
+	{
+		uint32_t lhsHSec = lhs.highestSection();
+		uint32_t rhsHSec = rhs.highestSection();
+
+		// 若最高段不同，则最高端更大的显然数值更大
+		if (lhsHSec != rhsHSec)
+		{
+			return lhsHSec > rhsHSec;
+		}
+
+		bool is_lhsGreater = false;
+
+		lhs.eachSection([&](size_t i, uint32_t sec) -> bool
+		{
+			if (sec > rhs.sectionAt(i))
+			{
+				is_lhsGreater = true;
+				return false;
+			}
+			return true;
+		});
+
+		return is_lhsGreater;
+	}
+}
+
+bool operator>=(const Boron& lhs, const Boron& rhs)
+{
+	return lhs > rhs || lhs == rhs;
+}
+
+bool operator<(const Boron& lhs, const Boron& rhs)
+{
+	return !(rhs >= rhs);
+}
+
+bool operator<=(const Boron& lhs, const Boron& rhs)
+{
+	return !(lhs > rhs);
+}
+
+bool operator==(const Boron& lhs, const Boron& rhs)
+{
+	bool isEqual = true;
+	lhs.eachSection([&](size_t i, uint32_t sec) -> bool
+		{
+			if (sec != rhs.sectionAt(i))
+			{
+				isEqual = false;
+				return false;
+			}
+			return true;
+		});
+	return isEqual;
+}
+
+bool operator!=(const Boron& lhs, const Boron& rhs)
+{
+	return !(lhs == rhs);
 }
 
 }

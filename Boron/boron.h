@@ -84,7 +84,9 @@ public:
 public:
 	Division divmod(Boron rhs);
 	Decimal div(Boron precision = 8);
-	Boron modpow(Boron base, Boron exponent, Boron modular);
+	Boron pow(Boron rhs);
+	Boron modpow(Boron exponent, Boron modular);
+	std::vector<Boron> factorize(Boron n);
 
 public:
 	friend bool operator>(const Boron& lhs, const Boron& rhs);
@@ -107,11 +109,12 @@ public:
 	void clear();
 	size_t digits()                           const;
 	size_t sectionAmount()                    const;
-	unsigned sectionAt(size_t offset)         const;
-	unsigned bitAt(size_t sec, size_t offset) const;
-	unsigned bitAt(size_t offset)             const;
-	std::vector<unsigned> getData()           const;
-	void eachSection(std::function<bool(size_t&, uint32_t)> executer) const;
+	uint32_t sectionAt(size_t offset)         const;
+	uint32_t bitAt(size_t sec, size_t offset) const;
+	uint32_t bitAt(size_t offset)             const;
+	uint32_t highestSection()                 const;
+	std::vector<uint32_t> getData()           const;
+	void eachSection(std::function<bool(size_t, uint32_t)> executer) const;
 
 public:
 	std::string toString(int base = 10)       const;
