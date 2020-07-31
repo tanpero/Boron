@@ -114,11 +114,11 @@ public:
 	uint32_t bitAt(size_t offset)             const;
 	uint32_t highestSection()                 const;
 	std::vector<uint32_t> getData()           const;
-	void eachSection(std::function<bool(size_t, uint32_t)> executer) const;
+	void eachSection(std::function<bool(size_t, uint32_t&)> execution);
 
 public:
 	std::string toString(int base = 10)       const;
-	uint32_t getUInt32()                       const;
+	uint32_t getUInt32()                      const;
 };
 
 // 获取数值 x 第 n 位的值

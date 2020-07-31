@@ -101,26 +101,6 @@ Boron& Boron::operator=(const Boron& b)
 }
 
 
-#define make_assignment(type)     \
-Boron& Boron::operator=(type n)   \
-{                                 \
-	*this = std::move(Boron(n));  \
-	return *this;                 \
-} 
-
-make_assignment(int8_t)
-make_assignment(uint8_t)
-make_assignment(int16_t)
-make_assignment(uint16_t)
-make_assignment(int32_t)
-make_assignment(uint32_t)
-make_assignment(int64_t)
-make_assignment(uint64_t)
-make_assignment(int64_t)
-make_assignment(uint64_t)
-
-#undef make_assignment
-
 Boron Boron::operator-() const
 {
 	Boron b = *this;
@@ -246,16 +226,17 @@ std::vector<unsigned> Boron::getData() const
 	return data;
 }
 
-void Boron::eachSection(std::function<bool(size_t, uint32_t)> execution) const
+void Boron::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 {
 	for (size_t i = 0, last = sectionAmount(); i < last; i += 1)
 	{
-		if (!execution(i, sectionAt(i)))
+		if (!execution(i, data[last - 1 - i]))
 		{
 			return;
 		}
 	}
 }
+
 
 std::string Boron::toString(int base) const
 {
@@ -284,7 +265,33 @@ Boron Boron::operator<<=(const Boron& rhs)
 	// 如果左移的位数不致超过最高段
 	if (length_of_bits(data[0]) > rhs)
 	{
-		data[0] <<= rhs.getUInt32();
+
+		uint32_t _rhs = rhs.getUInt32();
+
+		// 第一步：将最高段直接左移，为下一段腾出空间
+		data[0] <<= _rhs;
+
+		size_t amount = sectionAmount();
+
+		if (amount == 1)
+		{
+			return *this;
+		}
+
+		// 第二步：
+		eachSection([&](size_t i, uint32_t& sec) -> bool
+			{
+				for (size_t j = 0; j < _rhs; j++)
+				{
+					sec = set_bit(sec, j, get_bit(data.at(i + 1), 32 - 1 - j));
+				}
+				if (i == amount - 2)
+				{
+					sec <<= rhs;
+					return false;
+				}
+				return true;
+			});
 	}
 	else if (rhs <= 32)
 	{
@@ -320,9 +327,7 @@ Boron Boron::modpow(Boron exponent, Boron modular)
 
 Boron gcd(Boron& a, Boron& b)
 {
-	Boron old_s = 1, s = 0,
-		old_t = 0, t = 1,
-		old_r = a, r = b;
+	return Boron();
 	
 }
 
