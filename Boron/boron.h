@@ -54,32 +54,48 @@ public:
 	Boron& operator=(std::string s);
 
 public:
-	Boron operator++ ();
-	Boron operator++ (int);
-	Boron operator-- ();
-	Boron operator-- (int);
-	Boron operator-  ()                 const;
-	Boron operator+  (const Boron& rhs) const;
-	Boron operator-  (const Boron& rhs) const;
-	Boron operator*  (const Boron& rhs) const;
-	Boron operator/  (const Boron& rhs) const;
-	Boron operator%  (const Boron& rhs) const;
-	Boron operator<< (const Boron& rhs) const;
-	Boron operator>> (const Boron& rhs) const;
-	Boron operator&  (const Boron& rhs) const;
-	Boron operator|  (const Boron& rhs) const;
-	Boron operator^  (const Boron& rhs) const;
-	Boron operator~  ()                 const;
-	Boron operator+= (const Boron& rhs);
-	Boron operator-= (const Boron& rhs);
-	Boron operator*= (const Boron& rhs);
-	Boron operator/= (const Boron& rhs);
-	Boron operator%= (const Boron& rhs);
-	Boron operator<<=(const Boron& rhs);
-	Boron operator>>=(const Boron& rhs);
-	Boron operator&= (const Boron& rhs);
-	Boron operator|= (const Boron& rhs);
-	Boron operator^= (const Boron& rhs);
+
+#define make_uop_decl(op) \
+	friend Boron operator##op##(const Boron& lhs);
+
+#define make_bop_decl(op) \
+	friend Boron operator##op##(const Boron& lhs, const Boron& rhs);
+
+
+	friend Boron operator++ (Boron, int);
+	friend Boron operator-- (Boron);
+	friend Boron operator-- (Boron, int);
+	friend Boron operator-  (Boron);
+
+	make_uop_decl(-)
+	make_bop_decl(+)
+	make_bop_decl(-)
+	make_bop_decl(*)
+	make_bop_decl(/)
+	make_bop_decl(%)
+	make_bop_decl(<<)
+	make_bop_decl(>>)
+	make_bop_decl(&)
+	make_bop_decl(|)
+	make_bop_decl(^)
+	make_uop_decl(~)
+
+	make_bop_decl(+=)
+	make_bop_decl(-=)
+	make_bop_decl(*=)
+	make_bop_decl(/=)
+	make_bop_decl(%=)
+	make_bop_decl(<<=)
+	make_bop_decl(>>=)
+	make_bop_decl(&=)
+	make_bop_decl(|=)
+	make_bop_decl(^=)
+
+	make_bop_decl(&&)
+	make_bop_decl(||)
+
+#undef make_uop_decl
+#undef make_bop_decl
 
 public:
 	Division divmod(Boron rhs);
