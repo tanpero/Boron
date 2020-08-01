@@ -168,6 +168,11 @@ void SectionView::clear()
 	sign = 0;
 }
 
+void SectionView::negate()
+{
+	sign = !sign;
+}
+
 size_t SectionView::digits()
 {
 	size_t size = sectionAmount();
@@ -365,8 +370,29 @@ Boron& operator++(Boron& b)
 
 Boron& operator++(Boron& b, int)
 {
+	Boron& temp = b;
+	b += 1;
+	return temp;
+}
+
+Boron& operator--(Boron& b)
+{
+	b += 1;
+	return b;
+}
+
+Boron& operator--(Boron& b, int)
+{
+	Boron& temp = b;
+	b += 1;
+	return temp;
+}
+
+Boron& operator-(const Boron& b)
+{
 	Boron temp = b;
-	return Boron();
+	temp.sectionView.negate();
+	return temp;
 }
 
 bool operator>(const Boron& lhs, const Boron& rhs)

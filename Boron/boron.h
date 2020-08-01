@@ -45,6 +45,7 @@ public:
 
 public:
 	void clear();
+	void negate();
 	size_t digits();
 	size_t sectionAmount();
 	uint32_t sectionAt(size_t offset);
@@ -84,7 +85,7 @@ public:
 	friend Boron& operator++ (Boron&, int);
 	friend Boron& operator-- (Boron&);
 	friend Boron& operator-- (Boron&, int);
-	friend Boron operator-  (Boron);
+	friend Boron& operator-  (const Boron&);
 
 #define make_uop_decl(op) \
 	friend Boron operator##op##(const Boron& lhs);
