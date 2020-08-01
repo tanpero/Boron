@@ -16,7 +16,7 @@ namespace boron
 struct Division;
 struct Decimal;
 
-class Data
+class SectionView
 {
 	std::vector<uint32_t> data;
 
@@ -25,58 +25,65 @@ class Data
 	bool sign;
 
 public:
-	Data();
-	Data(const Data& b);
-	Data(int8_t n);
-	Data(uint8_t n);
-	Data(int16_t n);
-	Data(uint16_t n);
-	Data(int32_t n);
-	Data(uint32_t n);
-	Data(int64_t n);
-	Data(uint64_t n);
-	Data(const char* s, int base = 10);
-	Data(std::string s, int base = 10);
+	SectionView();
+	SectionView(const SectionView& sv);
+	SectionView(int8_t n);
+	SectionView(uint8_t n);
+	SectionView(int16_t n);
+	SectionView(uint16_t n);
+	SectionView(int32_t n);
+	SectionView(uint32_t n);
+	SectionView(int64_t n);
+	SectionView(uint64_t n);
+	SectionView(const char* s, int base = 10);
+	SectionView(std::string s, int base = 10);
 
-	~Data();
+	~SectionView();
 
 public:
-	Data& operator=(const Data& b);
-	Data& operator=(int8_t n);
-	Data& operator=(uint8_t n);
-	Data& operator=(int16_t n);
-	Data& operator=(uint16_t n);
-	Data& operator=(int32_t n);
-	Data& operator=(uint32_t n);
-	Data& operator=(int64_t n);
-	Data& operator=(uint64_t n);
-	Data& operator=(const char* s);
-	Data& operator=(std::string s);
+	SectionView& operator=(const SectionView& sv);
 
 public:
 	void clear();
-	size_t digits()                                      const;
-	size_t sectionAmount()                               const;
-	uint32_t sectionAt(size_t offset)                    const;
-	void moditySection(size_t offset, uint32_t newValue) const;
-	void modityHighestSection(size_t offset, uint32_t newValue);
-	uint32_t bitAt(size_t sec, size_t offset)            const;
-	uint32_t bitAt(size_t offset)                        const;
-	uint32_t highestSection()                            const;
-	std::vector<uint32_t> getData()                      const;
+	size_t digits();
+	size_t sectionAmount();
+	uint32_t sectionAt(size_t offset);
+	void modifySection(size_t offset, uint32_t newValue);
+	void modifyHighestSection(uint32_t newValue);
+	uint32_t bitAt(size_t sec, size_t offset);
+	uint32_t bitAt(size_t offset);
+	uint32_t highestSection();
+	std::vector<uint32_t> getData();
 	void eachSection(std::function<bool(size_t, uint32_t&)> execution);
 };
 
 class Boron
 {
 
-	Data data;
+public:
+	SectionView sectionView;
 
 public:
 
-	friend Boron operator++ (Boron, int);
-	friend Boron operator-- (Boron);
-	friend Boron operator-- (Boron, int);
+	Boron(const SectionView& sv);
+	Boron(const Boron& b);
+
+	Boron(int8_t n) : sectionView(n) {}
+	Boron(uint8_t n) : sectionView(n) {}
+	Boron(int16_t n) : sectionView(n) {}
+	Boron(uint16_t n) : sectionView(n) {}
+	Boron(int32_t n) : sectionView(n) {}
+	Boron(uint32_t n) : sectionView(n) {}
+	Boron(int64_t n) : sectionView(n) {}
+	Boron(uint64_t n) : sectionView(n) {}
+	Boron& operator=(Boron& b);
+	~Boron();
+
+public:
+	friend Boron& operator++ (Boron&);
+	friend Boron& operator++ (Boron&, int);
+	friend Boron& operator-- (Boron&);
+	friend Boron& operator-- (Boron&, int);
 	friend Boron operator-  (Boron);
 
 #define make_uop_decl(op) \

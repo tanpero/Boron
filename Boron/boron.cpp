@@ -3,55 +3,55 @@
 namespace boron
 {
 
-Data::Data()
+SectionView::SectionView()
 {
 	sign = 0;
 	data = { 0 };
 }
 
-Data::Data(const Data& d)
+SectionView::SectionView(const SectionView& sv)
 {
-	sign = d.sign;
-	data = std::move(d).data;
+	sign = sv.sign;
+	data = std::move(sv).data;
 }
               
-Data::Data(int8_t n)
+SectionView::SectionView(int8_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Data::Data(uint8_t n)
+SectionView::SectionView(uint8_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Data::Data(int16_t n)
+SectionView::SectionView(int16_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Data::Data(uint16_t n)
+SectionView::SectionView(uint16_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Data::Data(int32_t n)
+SectionView::SectionView(int32_t n)
 {
 	sign = n < 0;
 	data = { (unsigned)std::abs(n) };
 }
 
-Data::Data(uint32_t n)
+SectionView::SectionView(uint32_t n)
 {
 	sign = 0;
 	data = { n };
 }
 
-Data::Data(int64_t _n)
+SectionView::SectionView(int64_t _n)
 {
 	sign = _n < 0;
 	uint64_t n = (uint64_t)std::abs(_n);
@@ -66,7 +66,7 @@ Data::Data(int64_t _n)
 	}
 }
 
-Data::Data(uint64_t n)
+SectionView::SectionView(uint64_t n)
 {
 	sign = 0;
 	uint64_t criticalValue = (uint64_t)UINT_MAX;
@@ -80,33 +80,25 @@ Data::Data(uint64_t n)
 	}
 }
 
-Data::Data(const char* s, int base)
+SectionView::SectionView(const char* s, int base)
 {
 }
 
-Data::Data(std::string s, int base)
+SectionView::SectionView(std::string s, int base)
 {
 }
 
-Data::~Data()
+SectionView::~SectionView()
 {
 }
 
 
-Data& Data::operator=(const Data& d)
+SectionView& SectionView::operator=(const SectionView& sv)
 {
-	this->sign = d.sign;
-	this->data = d.data;
+	*this = sv;
 	return *this;
 }
 
-
-Boron operator-() const
-{
-	Boron b = *this;
-	b.sign = !b.sign;
-	return b;
-}
 
 /*
 Boron Boron::operator+(const Boron& rhs) const
@@ -170,13 +162,13 @@ Boron Boron::operator+=(const Boron& rhs)
 }
 */
 
-void Boron::clear()
+void SectionView::clear()
 {
 	data = { 0 };
 	sign = 0;
 }
 
-size_t Boron::digits() const
+size_t SectionView::digits()
 {
 	size_t size = sectionAmount();
 	if (size == 1)
@@ -189,23 +181,33 @@ size_t Boron::digits() const
 	}
 }
 
-size_t Boron::sectionAmount() const
+size_t SectionView::sectionAmount()
 {
 	return data.size();
 }
 
 // 段的逻辑索引，而非在 vector 中的实际位置
-unsigned Boron::sectionAt(size_t offset) const
+unsigned SectionView::sectionAt(size_t offset)
 {
 	return data.at(sectionAmount() - 1 - offset);
 }
 
-unsigned Boron::bitAt(size_t sec, size_t offset) const
+void SectionView::modifySection(size_t offset, uint32_t newValue)
+{
+	data[sectionAmount() - offset - 1] = newValue;
+}
+
+void SectionView::modifyHighestSection(uint32_t newValue)
+{
+	data[0] = newValue;
+}
+
+unsigned SectionView::bitAt(size_t sec, size_t offset)
 {
 	return get_bit(sectionAt(sec), offset);
 }
 
-unsigned Boron::bitAt(size_t offset) const
+unsigned SectionView::bitAt(size_t offset)
 {
 	if (offset < 32)
 	{
@@ -216,17 +218,17 @@ unsigned Boron::bitAt(size_t offset) const
 	return bitAt(sec, restOffset);
 }
 
-uint32_t Boron::highestSection() const
+uint32_t SectionView::highestSection()
 {
 	return sectionAt(sectionAmount() - 1);
 }
 
-std::vector<unsigned> Boron::getData() const
+std::vector<unsigned> SectionView::getData()
 {
 	return data;
 }
 
-void Boron::eachSection(std::function<bool(size_t, uint32_t&)> execution)
+void SectionView::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 {
 	for (size_t i = 0, last = sectionAmount(); i < last; i += 1)
 	{
@@ -238,7 +240,7 @@ void Boron::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 }
 
 
-std::string Boron::toString(int base) const
+std::string Boron::toString(int base)
 {
 	if (data.size() == 1)
 	{
@@ -273,7 +275,7 @@ make_bop_def(<<=)
 		uint32_t _rhs = rhs.getUInt32();
 
 		// 第一步：将最高段直接左移，为下一段腾出空间
-		lhs.mo
+		lhs.dataView.a
 
 		size_t amount = lhs.sectionAmount();
 
@@ -305,6 +307,26 @@ make_bop_def(<<=)
 	}
 }
 
+Boron::Boron(const SectionView& sv)
+{
+	sectionView = std::move(sv);
+}
+
+Boron::Boron(const Boron& b)
+{
+	sectionView = std::move(b.sectionView);
+}
+
+Boron& Boron::operator=(Boron& b)
+{
+	*this = b;
+	return *this;
+}
+
+Boron::~Boron()
+{
+}
+
 Boron Boron::modpow(Boron exponent, Boron modular)
 {
 	Boron base = *this;
@@ -333,6 +355,18 @@ Boron gcd(Boron& a, Boron& b)
 {
 	return Boron();
 	
+}
+
+Boron& operator++(Boron& b)
+{
+	b += 1;
+	return b;
+}
+
+Boron& operator++(Boron& b, int)
+{
+	Boron temp = b;
+	return Boron();
 }
 
 bool operator>(const Boron& lhs, const Boron& rhs)
