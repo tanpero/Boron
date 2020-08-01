@@ -3,55 +3,55 @@
 namespace boron
 {
 
-Boron::Boron()
+Data::Data()
 {
 	sign = 0;
 	data = { 0 };
 }
 
-Boron::Boron(const Boron& b)
+Data::Data(const Data& d)
 {
-	sign = b.sign;
-	data = std::move(b).data;
+	sign = d.sign;
+	data = std::move(d).data;
 }
               
-Boron::Boron(int8_t n)
+Data::Data(int8_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Boron::Boron(uint8_t n)
+Data::Data(uint8_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Boron::Boron(int16_t n)
+Data::Data(int16_t n)
 {
 	sign = n < 0;
 	data = { static_cast<unsigned>(std::abs(n)) };
 }
 
-Boron::Boron(uint16_t n)
+Data::Data(uint16_t n)
 {
 	sign = 0;
 	data = { static_cast<unsigned>(n) };
 }
 
-Boron::Boron(int32_t n)
+Data::Data(int32_t n)
 {
 	sign = n < 0;
 	data = { (unsigned)std::abs(n) };
 }
 
-Boron::Boron(uint32_t n)
+Data::Data(uint32_t n)
 {
 	sign = 0;
 	data = { n };
 }
 
-Boron::Boron(int64_t _n)
+Data::Data(int64_t _n)
 {
 	sign = _n < 0;
 	uint64_t n = (uint64_t)std::abs(_n);
@@ -66,7 +66,7 @@ Boron::Boron(int64_t _n)
 	}
 }
 
-Boron::Boron(uint64_t n)
+Data::Data(uint64_t n)
 {
 	sign = 0;
 	uint64_t criticalValue = (uint64_t)UINT_MAX;
@@ -80,28 +80,28 @@ Boron::Boron(uint64_t n)
 	}
 }
 
-Boron::Boron(const char* s, int base)
+Data::Data(const char* s, int base)
 {
 }
 
-Boron::Boron(std::string s, int base)
+Data::Data(std::string s, int base)
 {
 }
 
-Boron::~Boron()
+Data::~Data()
 {
 }
 
 
-Boron& Boron::operator=(const Boron& b)
+Data& Data::operator=(const Data& d)
 {
-	this->sign = b.sign;
-	this->data = b.data;
+	this->sign = d.sign;
+	this->data = d.data;
 	return *this;
 }
 
 
-Boron Boron::operator-() const
+Boron operator-() const
 {
 	Boron b = *this;
 	b.sign = !b.sign;
@@ -253,25 +253,29 @@ std::string Boron::toString(int base) const
 	return s;
 }
 
-Boron Boron::operator<<(const Boron& rhs) const
+
+#define make_bop_def(op) \
+	Boron operator##op##(const Boron& lhs, const Boron& rhs)
+
+make_bop_def(<<)
 {
-	Boron temp = *this;
+	Boron temp = lhs;
 	temp <<= rhs;
 	return temp;
 }
 
-Boron Boron::operator<<=(const Boron& rhs)
+make_bop_def(<<=)
 {
 	// 如果左移的位数不致超过最高段
-	if (length_of_bits(data[0]) > rhs)
+	if (length_of_bits(lhs.data[0]) > rhs)
 	{
 
 		uint32_t _rhs = rhs.getUInt32();
 
 		// 第一步：将最高段直接左移，为下一段腾出空间
-		data[0] <<= _rhs;
+		lhs.mo
 
-		size_t amount = sectionAmount();
+		size_t amount = lhs.sectionAmount();
 
 		if (amount == 1)
 		{

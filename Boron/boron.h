@@ -16,56 +16,74 @@ namespace boron
 struct Division;
 struct Decimal;
 
-class Boron
+class Data
 {
-	std::vector<unsigned> data;
+	std::vector<uint32_t> data;
 
 	// 0 为正，1 为负
 	bool POS = 0, NEG = 1;
 	bool sign;
 
 public:
-	Boron();
-	Boron(const Boron& b);
-	Boron(int8_t n);
-	Boron(uint8_t n);
-	Boron(int16_t n);
-	Boron(uint16_t n);
-	Boron(int32_t n);
-	Boron(uint32_t n);
-	Boron(int64_t n);
-	Boron(uint64_t n);
-	Boron(const char* s, int base = 10);
-	Boron(std::string s, int base = 10);
+	Data();
+	Data(const Data& b);
+	Data(int8_t n);
+	Data(uint8_t n);
+	Data(int16_t n);
+	Data(uint16_t n);
+	Data(int32_t n);
+	Data(uint32_t n);
+	Data(int64_t n);
+	Data(uint64_t n);
+	Data(const char* s, int base = 10);
+	Data(std::string s, int base = 10);
 
-	~Boron();
-
-public:
-	Boron& operator=(const Boron& b);
-	Boron& operator=(int8_t n);
-	Boron& operator=(uint8_t n);
-	Boron& operator=(int16_t n);
-	Boron& operator=(uint16_t n);
-	Boron& operator=(int32_t n);
-	Boron& operator=(uint32_t n);
-	Boron& operator=(int64_t n);
-	Boron& operator=(uint64_t n);
-	Boron& operator=(const char* s);
-	Boron& operator=(std::string s);
+	~Data();
 
 public:
+	Data& operator=(const Data& b);
+	Data& operator=(int8_t n);
+	Data& operator=(uint8_t n);
+	Data& operator=(int16_t n);
+	Data& operator=(uint16_t n);
+	Data& operator=(int32_t n);
+	Data& operator=(uint32_t n);
+	Data& operator=(int64_t n);
+	Data& operator=(uint64_t n);
+	Data& operator=(const char* s);
+	Data& operator=(std::string s);
+
+public:
+	void clear();
+	size_t digits()                                      const;
+	size_t sectionAmount()                               const;
+	uint32_t sectionAt(size_t offset)                    const;
+	void moditySection(size_t offset, uint32_t newValue) const;
+	void modityHighestSection(size_t offset, uint32_t newValue);
+	uint32_t bitAt(size_t sec, size_t offset)            const;
+	uint32_t bitAt(size_t offset)                        const;
+	uint32_t highestSection()                            const;
+	std::vector<uint32_t> getData()                      const;
+	void eachSection(std::function<bool(size_t, uint32_t&)> execution);
+};
+
+class Boron
+{
+
+	Data data;
+
+public:
+
+	friend Boron operator++ (Boron, int);
+	friend Boron operator-- (Boron);
+	friend Boron operator-- (Boron, int);
+	friend Boron operator-  (Boron);
 
 #define make_uop_decl(op) \
 	friend Boron operator##op##(const Boron& lhs);
 
 #define make_bop_decl(op) \
 	friend Boron operator##op##(const Boron& lhs, const Boron& rhs);
-
-
-	friend Boron operator++ (Boron, int);
-	friend Boron operator-- (Boron);
-	friend Boron operator-- (Boron, int);
-	friend Boron operator-  (Boron);
 
 	make_uop_decl(-)
 	make_bop_decl(+)
@@ -120,17 +138,6 @@ public:
 	friend Boron max(Boron& a, Boron& b);
 	friend Boron min(Boron& a, Boron& b);
 
-
-public:
-	void clear();
-	size_t digits()                           const;
-	size_t sectionAmount()                    const;
-	uint32_t sectionAt(size_t offset)         const;
-	uint32_t bitAt(size_t sec, size_t offset) const;
-	uint32_t bitAt(size_t offset)             const;
-	uint32_t highestSection()                 const;
-	std::vector<uint32_t> getData()           const;
-	void eachSection(std::function<bool(size_t, uint32_t&)> execution);
 
 public:
 	std::string toString(int base = 10)       const;
