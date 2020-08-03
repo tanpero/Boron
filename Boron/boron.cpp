@@ -9,7 +9,7 @@ SectionView::SectionView()
 	data = { 0 };
 }
 
-SectionView::SectionView(const SectionView& sv)
+SectionView::SectionView( SectionView& sv)
 {
 	sign = sv.sign;
 	data = std::move(sv).data;
@@ -80,7 +80,7 @@ SectionView::SectionView(uint64_t n)
 	}
 }
 
-SectionView::SectionView(const char* s, int base)
+SectionView::SectionView( char* s, int base)
 {
 }
 
@@ -93,7 +93,7 @@ SectionView::~SectionView()
 }
 
 
-SectionView& SectionView::operator=(const SectionView& sv)
+SectionView& SectionView::operator=( SectionView& sv)
 {
 	*this = sv;
 	return *this;
@@ -101,7 +101,7 @@ SectionView& SectionView::operator=(const SectionView& sv)
 
 
 /*
-Boron Boron::operator+(const Boron& rhs) const
+Boron Boron::operator+( Boron& rhs) 
 {
 	Boron temp = *this;
 	temp += rhs;
@@ -110,11 +110,11 @@ Boron Boron::operator+(const Boron& rhs) const
 */
 
 /*
-Boron Boron::operator+=(const Boron& rhs)
+Boron Boron::operator+=( Boron& rhs)
 {
 
-	const std::vector<unsigned>& lhs_data = data;
-	const std::vector<unsigned>& rhs_data = rhs.data;
+	 std::vector<unsigned>& lhs_data = data;
+	 std::vector<unsigned>& rhs_data = rhs.data;
 	std::vector<unsigned> result_data = { 0 };
 	size_t lhs_size = lhs_data.size();
 	size_t rhs_size = rhs_data.size();
@@ -245,24 +245,26 @@ void SectionView::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 }
 
 
-std::string Boron::toString(int base)
+
+std::string Boron::toString(int base) 
 {
-	if (data.size() == 1)
+	size_t amount = sectionView.sectionAmount();
+	if (amount == 1)
 	{
-		return std::to_string(data.at(0));
+		return std::to_string(sectionView.sectionAt(0));
 	}
 	std::string s;
-	for (size_t i = 0, length = data.size(); i < length; i += 1)
-	{
-		std::cout << std::to_string(data.at(i)) << "\n";
-		s += std::to_string(data.at(i));
-	}
+	sectionView.eachSection([&](size_t i, uint32_t& sec) -> bool
+		{
+			s = std::to_string(sec) + s;
+			return true;
+		});
 	return s;
 }
 
 
 #define make_bop_def(op) \
-	Boron operator##op##(const Boron& lhs, const Boron& rhs)
+	Boron operator##op##(Boron lhs, Boron rhs)
 
 make_bop_def(<<)
 {
@@ -273,28 +275,31 @@ make_bop_def(<<)
 
 make_bop_def(<<=)
 {
+	auto lsv = lhs.sectionView;
+
 	// 如果左移的位数不致超过最高段
-	if (length_of_bits(lhs.data[0]) > rhs)
+	if (length_of_bits(lsv.highestSection()) > rhs)
 	{
 
 		uint32_t _rhs = rhs.getUInt32();
 
 		// 第一步：将最高段直接左移，为下一段腾出空间
-		lhs.dataView.a
+		lsv.modifyHighestSection(lsv.highestSection() << _rhs);
 
-		size_t amount = lhs.sectionAmount();
+		size_t amount = lsv.sectionAmount();
 
 		if (amount == 1)
 		{
-			return *this;
+			return lhs;
 		}
 
 		// 第二步：
-		eachSection([&](size_t i, uint32_t& sec) -> bool
+		lsv.eachSection([&](size_t i, uint32_t& sec) -> bool
 			{
+				uint32_t next = lsv.sectionAt(i + 1);
 				for (size_t j = 0; j < _rhs; j++)
 				{
-					sec = set_bit(sec, j, get_bit(data.at(i + 1), 32 - 1 - j));
+					sec = set_bit(sec, j, get_bit(next, 32 - 1 - j));
 				}
 				if (i == amount - 2)
 				{
@@ -306,18 +311,20 @@ make_bop_def(<<=)
 	}
 	else if (rhs <= 32)
 	{
-		eachSection([&](size_t i, uint32_t section) -> bool{
+		lsv.eachSection([&](size_t i, uint32_t section) -> bool{
 
+			// TODO...
+			return false;
 		});
 	}
 }
 
-Boron::Boron(const SectionView& sv)
+Boron::Boron( SectionView& sv)
 {
 	sectionView = std::move(sv);
 }
 
-Boron::Boron(const Boron& b)
+Boron::Boron( Boron& b)
 {
 	sectionView = std::move(b.sectionView);
 }
@@ -388,17 +395,19 @@ Boron& operator--(Boron& b, int)
 	return temp;
 }
 
-Boron& operator-(const Boron& b)
+Boron& operator-( Boron& b)
 {
 	Boron temp = b;
 	temp.sectionView.negate();
 	return temp;
 }
 
-bool operator>(const Boron& lhs, const Boron& rhs)
+bool operator>(Boron lhs, Boron rhs)
 {
-	size_t lhsSecAmount = lhs.sectionAmount();
-	size_t rhsSecAmount = rhs.sectionAmount();
+	SectionView lsv = lhs.sectionView;
+	SectionView rsv = rhs.sectionView;
+	size_t lhsSecAmount = lsv.sectionAmount();
+	size_t rhsSecAmount = rsv.sectionAmount();
 
 	// 如果段数不同，则段数更大的显然数值更大
 	if (lhsSecAmount != rhsSecAmount)
@@ -407,8 +416,8 @@ bool operator>(const Boron& lhs, const Boron& rhs)
 	}
 	else
 	{
-		uint32_t lhsHSec = lhs.highestSection();
-		uint32_t rhsHSec = rhs.highestSection();
+		uint32_t lhsHSec = lsv.highestSection();
+		uint32_t rhsHSec = rsv.highestSection();
 
 		// 若最高段不同，则最高端更大的显然数值更大
 		if (lhsHSec != rhsHSec)
@@ -418,9 +427,9 @@ bool operator>(const Boron& lhs, const Boron& rhs)
 
 		bool is_lhsGreater = false;
 
-		lhs.eachSection([&](size_t i, uint32_t sec) -> bool
+		lsv.eachSection([&](size_t i, uint32_t sec) -> bool
 		{
-			if (sec > rhs.sectionAt(i))
+			if (sec > rsv.sectionAt(i))
 			{
 				is_lhsGreater = true;
 				return false;
@@ -432,27 +441,28 @@ bool operator>(const Boron& lhs, const Boron& rhs)
 	}
 }
 
-bool operator>=(const Boron& lhs, const Boron& rhs)
+bool operator>=(Boron lhs, Boron rhs)
 {
 	return lhs > rhs || lhs == rhs;
 }
 
-bool operator<(const Boron& lhs, const Boron& rhs)
+bool operator<(Boron lhs, Boron rhs)
 {
 	return !(rhs >= rhs);
 }
 
-bool operator<=(const Boron& lhs, const Boron& rhs)
+bool operator<=(Boron lhs, Boron rhs)
 {
 	return !(lhs > rhs);
 }
 
-bool operator==(const Boron& lhs, const Boron& rhs)
+bool operator==(Boron lhs, Boron rhs)
 {
 	bool isEqual = true;
-	lhs.eachSection([&](size_t i, uint32_t sec) -> bool
+	auto rsv = rhs.sectionView;
+	lhs.sectionView.eachSection([&](size_t i, uint32_t sec) -> bool
 		{
-			if (sec != rhs.sectionAt(i))
+			if (sec != rsv.sectionAt(i))
 			{
 				isEqual = false;
 				return false;
@@ -462,7 +472,7 @@ bool operator==(const Boron& lhs, const Boron& rhs)
 	return isEqual;
 }
 
-bool operator!=(const Boron& lhs, const Boron& rhs)
+bool operator!=(Boron lhs, Boron rhs)
 {
 	return !(lhs == rhs);
 }

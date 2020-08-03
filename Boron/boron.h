@@ -26,7 +26,7 @@ class SectionView
 
 public:
 	SectionView();
-	SectionView(const SectionView& sv);
+	SectionView( SectionView& sv);
 	SectionView(int8_t n);
 	SectionView(uint8_t n);
 	SectionView(int16_t n);
@@ -35,13 +35,13 @@ public:
 	SectionView(uint32_t n);
 	SectionView(int64_t n);
 	SectionView(uint64_t n);
-	SectionView(const char* s, int base = 10);
+	SectionView( char* s, int base = 10);
 	SectionView(std::string s, int base = 10);
 
 	~SectionView();
 
 public:
-	SectionView& operator=(const SectionView& sv);
+	SectionView& operator=( SectionView& sv);
 
 public:
 	void clear();
@@ -65,9 +65,9 @@ public:
 	SectionView sectionView;
 
 public:
-
-	Boron(const SectionView& sv);
-	Boron(const Boron& b);
+	Boron();
+	Boron(SectionView& sv);
+	Boron(Boron& b);
 
 	Boron(int8_t n) : sectionView(n) {}
 	Boron(uint8_t n) : sectionView(n) {}
@@ -85,15 +85,13 @@ public:
 	friend Boron& operator++ (Boron&, int);
 	friend Boron& operator-- (Boron&);
 	friend Boron& operator-- (Boron&, int);
-	friend Boron& operator-  (const Boron&);
 
 #define make_uop_decl(op) \
-	friend Boron operator##op##(const Boron& lhs);
+	friend Boron operator##op##(Boron lhs);
 
 #define make_bop_decl(op) \
-	friend Boron operator##op##(const Boron& lhs, const Boron& rhs);
+	friend Boron operator##op##(Boron lhs,  Boron rhs);
 
-	make_uop_decl(-)
 	make_bop_decl(+)
 	make_bop_decl(-)
 	make_bop_decl(*)
@@ -131,12 +129,12 @@ public:
 	std::vector<Boron> factorize(Boron n);
 
 public:
-	friend bool operator>(const Boron& lhs, const Boron& rhs);
-	friend bool operator>=(const Boron& lhs, const Boron& rhs);
-	friend bool operator<(const Boron& lhs, const Boron& rhs);
-	friend bool operator<=(const Boron& lhs, const Boron& rhs);
-	friend bool operator==(const Boron& lhs, const Boron& rhs);
-	friend bool operator!=(const Boron& lhs, const Boron& rhs);
+	friend bool operator>(Boron lhs,  Boron rhs);
+	friend bool operator>=(Boron lhs,  Boron rhs);
+	friend bool operator<(Boron lhs,  Boron rhs);
+	friend bool operator<=(Boron lhs,  Boron rhs);
+	friend bool operator==(Boron lhs,  Boron rhs);
+	friend bool operator!=(Boron lhs,  Boron rhs);
 
 	friend Boron pow(Boron& a, Boron& b);
 	friend Boron gcd(Boron& a, Boron& b);
@@ -148,8 +146,8 @@ public:
 
 
 public:
-	std::string toString(int base = 10)       const;
-	uint32_t getUInt32()                      const;
+	std::string toString(int base = 10)       ;
+	uint32_t getUInt32()                      ;
 };
 
 // 获取数值 x 第 n 位的值
