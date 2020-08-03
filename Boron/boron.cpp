@@ -15,7 +15,7 @@ SectionView::SectionView()
 
 SectionView::SectionView(std::vector<uint32_t> vec)
 {
-    data = vec;
+    data = std::move(vec);
     sign = POS;
 }
 
@@ -23,8 +23,8 @@ SectionView::SectionView(SectionView& sv)
 {
     if (*this != sv)
     {
+        data = std::move(sv.data);
         sign = sv.sign;
-        data = sv.data;
     }
 }
               
@@ -214,7 +214,7 @@ Boron::Boron()
 
 Boron::Boron( SectionView& sv)
 {
-    sectionView = sv;
+    sectionView = std::move(sv);
 }
 
 Boron::Boron(Boron& b)
@@ -224,7 +224,7 @@ Boron::Boron(Boron& b)
 
 Boron& Boron::operator=(Boron& b)
 {
-    *this = b;
+    sectionView = std::move(b.sectionView);
     return *this;
 }
 
@@ -236,15 +236,15 @@ Boron::~Boron()
  * 用于完成基本计算
  */
 
-Boron& operator++(Boron& b)
+Boron& operator++(Boron b)
 {
     b += 1;
     return b;
 }
 
-Boron& operator++(Boron& b, int)
+Boron& operator++(Boron&b, int)
 {
-    Boron& temp = b;
+    Boron temp = b;
     b += 1;
     return temp;
 }
@@ -257,7 +257,7 @@ Boron& operator--(Boron& b)
 
 Boron& operator--(Boron& b, int)
 {
-    Boron& temp = b;
+    Boron temp = b;
     b += 1;
     return temp;
 }
