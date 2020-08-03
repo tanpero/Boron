@@ -10,12 +10,12 @@ namespace boron
 SectionView::SectionView()
 {
 	sign = 0;
-	data = { 0 };
+	data = std::vector<uint32_t>{ 0 };
 }
 
 SectionView::SectionView(std::vector<uint32_t> vec)
 {
-	data = std::move(vec);
+	data = vec;
 	sign = POS;
 }
 
@@ -24,7 +24,7 @@ SectionView::SectionView(SectionView& sv)
 	if (*this != sv)
 	{
 		sign = sv.sign;
-		data = std::move(sv).data;
+		data = sv.data;
 	}
 }
               
@@ -214,7 +214,7 @@ Boron::Boron()
 
 Boron::Boron( SectionView& sv)
 {
-	sectionView = std::move(sv);
+	sectionView = sv;
 }
 
 Boron::Boron(Boron& b)

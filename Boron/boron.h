@@ -174,7 +174,7 @@ constexpr inline uint32_t set_bit(uint32_t x, uint32_t n, uint32_t a)
 // 求 n 的二进制位数
 constexpr inline uint32_t length_of_bits(uint32_t n)
 {
-	int32_t pow_of_2[32] =
+	uint32_t pow_of_2[32] =
 	{
 				 1,           2,           4,           8,         16,          32,
 				64,         128,         256,         512,       1024,        2048,
@@ -184,12 +184,12 @@ constexpr inline uint32_t length_of_bits(uint32_t n)
 		1073741824,  2147483648
 	};
 
-	int32_t left = 0,
+	uint32_t left = 0,
 		right = 31;
 
 	while (left <= right)
 	{
-		int mid = (left + right) / 2;
+		uint32_t mid = (left + right) / 2;
 		if (pow_of_2[mid] <= n)
 		{
 			if (pow_of_2[mid + 1] > n)
