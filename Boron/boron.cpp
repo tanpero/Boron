@@ -19,10 +19,13 @@ SectionView::SectionView(std::vector<uint32_t> vec)
 	sign = POS;
 }
 
-SectionView::SectionView( SectionView& sv)
+SectionView::SectionView(SectionView& sv)
 {
-	sign = sv.sign;
-	data = std::move(sv).data;
+	if (*this != sv)
+	{
+		sign = sv.sign;
+		data = std::move(sv).data;
+	}
 }
               
 SectionView::SectionView(int8_t n)
@@ -102,10 +105,13 @@ SectionView::~SectionView()
 {
 }
 
-
 SectionView& SectionView::operator=( SectionView& sv)
 {
-	*this = sv;
+	if (*this != sv)
+	{
+		sign = sv.sign;
+		data = std::move(sv.data);
+	}
 	return *this;
 }
 
@@ -201,6 +207,7 @@ void SectionView::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 /*
  * class Boron
  */
+
 Boron::Boron()
 {
 }
@@ -321,16 +328,19 @@ make_bop_def(-)
 make_bop_def(*)
 {
 
+	return Boron();
 }
 
 make_bop_def(/)
 {
 
+	return Boron();
 }
 
 make_bop_def(%)
 {
 
+	return Boron();
 }
 
 make_bop_def(<<)
@@ -343,26 +353,56 @@ make_bop_def(<<)
 make_bop_def(>>)
 {
 
+	return Boron();
 }
 
 make_bop_def(&)
 {
 
+	return Boron();
 }
 
 make_bop_def(|)
 {
 
+	return Boron();
 }
 
 make_bop_def(^)
 {
 
+	return Boron();
 }
 
 make_uop_def(~)
 {
 
+	return Boron();
+}
+
+make_asn_def(+=)
+{
+	return Boron();
+}
+
+make_asn_def(-=)
+{
+	return Boron();
+}
+
+make_asn_def(*=)
+{
+	return Boron();
+}
+
+make_asn_def(/=)
+{
+	return Boron();
+}
+
+make_asn_def(%=)
+{
+	return Boron();
 }
 
 make_asn_def(<<=)
@@ -409,6 +449,37 @@ make_asn_def(<<=)
 			return false;
 			});
 	}
+}
+
+make_asn_def(>>=)
+{
+	return Boron();
+}
+
+make_asn_def(&=)
+{
+	return Boron();
+}
+
+make_asn_def(|=)
+{
+	return Boron();
+}
+
+make_asn_def(^=)
+{
+	return Boron();
+}
+
+
+make_bop_def(&&)
+{
+	return Boron();
+}
+
+make_bop_def(||)
+{
+	return Boron();
 }
 
 
