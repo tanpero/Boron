@@ -85,6 +85,7 @@ public:
     Boron(uint32_t n) : sectionView(n) {}
     Boron(int64_t n) : sectionView(n) {}
     Boron(uint64_t n) : sectionView(n) {}
+    Boron(std::string s) : sectionView(s) {}
     Boron& operator=(Boron& b);
     ~Boron();
 
@@ -134,9 +135,14 @@ public:
 #undef make_bop_decl
 #undef make_asn_decl
 
-    inline explicit operator bool() const
+    constexpr inline explicit operator bool() const
     {
-        return *this != 0;
+        return *this != Boron(0);
+    }
+
+    constexpr inline operator char*() const
+    {
+        return const_cast<char*>(toString().c_str());
     }
 
 public:
@@ -159,9 +165,12 @@ public:
     friend Boron max(Boron& a, Boron& b);
     friend Boron min(Boron& a, Boron& b);
 
+    friend std::ostream& operator<<(std::ostream& os, Boron& b);
+    friend std::istream& operator>>(std::istream& is, Boron& b);
+
 
 public:
-    std::string toString(int base = 10)       ;
+    std::string toString(int base = 10) const;
     uint32_t getUInt32()                      ;
 };
 

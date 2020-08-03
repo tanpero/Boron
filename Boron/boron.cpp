@@ -601,10 +601,9 @@ std::vector<Boron> factorize(Boron& n)
 
 Boron gcd(Boron& u, Boron& v)
 {
-    return Boron();
     if (u == v)
     {
-        if (u == 0)
+        if (u == Boron(0))
         {
             return 0;
         }
@@ -615,25 +614,25 @@ Boron gcd(Boron& u, Boron& v)
     {
         if (v & 1)
         {
-            return gcd(y >> 1, v);
+            return gcd(u >> 1, v);
         }
         else
         {
             return gcd(u >> 1, v >> 1) << 1;
         }
-
-        if (~v & 1)
-        {
-            return gcd(u, v >> 1);
-        }
-
-        if (u > v)
-        {
-            return gcd((u - v) >> 1, v);
-        }
-         
-        return gcd((v - u) >> 1, u);
     }
+
+    if (~v & 1)
+    {
+        return gcd(u, v >> 1);
+    }
+
+    if (u > v)
+    {
+        return gcd((u - v) >> 1, v);
+    }
+
+    return gcd((v - u) >> 1, u);
 }
 
 Boron lcm(Boron& a, Boron& b)
@@ -661,12 +660,32 @@ Boron min(Boron& a, Boron& b)
     return Boron();
 }
 
+std::ostream& operator<<(std::ostream& os, Boron& b)
+{
+    os << b.toString();
+}
+
+std::istream& operator>>(std::istream& is, Boron& b)
+{
+    std::string s = "0";
+    is >> s;
+
+    if ((is.rdstate() & is.failbit) != 0)
+    {
+        std::cerr << "Invalid input" << std::endl;
+    }
+
+    b = Boron(s);
+
+    return is;
+}
+
 /*
  * 用于向外传递数值
  */
 
 // TODO...
-std::string Boron::toString(int base)
+std::string Boron::toString(int base) const
 {
     size_t amount = sectionView.sectionAmount();
     if (amount == 1)
