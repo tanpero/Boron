@@ -75,6 +75,7 @@ public:
     Boron();
     Boron(SectionView& sv);
     Boron(Boron& b);
+    Boron(const Boron& b);
 
     Boron(int8_t n) : sectionView(n) {}
     Boron(uint8_t n) : sectionView(n) {}
@@ -103,35 +104,40 @@ public:
     make_bop_decl(+)
     make_bop_decl(-)
     make_bop_decl(*)
-    make_bop_decl(/)
+    make_bop_decl(/ )
     make_bop_decl(%)
-    make_bop_decl(<<)
-    make_bop_decl(>>)
+    make_bop_decl(<< )
+    make_bop_decl(>> )
     make_bop_decl(&)
-    make_bop_decl(|)
+    make_bop_decl(| )
     make_bop_decl(^)
     make_uop_decl(~)
 
 #define make_asn_decl(op) \
     friend Boron& operator##op##(Boron lhs, Boron rhs);
 
-    make_asn_decl(+=)
-    make_asn_decl(-=)
-    make_asn_decl(*=)
-    make_asn_decl(/=)
-    make_asn_decl(%=)
-    make_asn_decl(<<=)
-    make_asn_decl(>>=)
-    make_asn_decl(&=)
-    make_asn_decl(|=)
-    make_asn_decl(^=)
+    make_asn_decl(+= )
+    make_asn_decl(-= )
+    make_asn_decl(*= )
+    make_asn_decl(/= )
+    make_asn_decl(%= )
+    make_asn_decl(<<= )
+    make_asn_decl(>>= )
+    make_asn_decl(&= )
+    make_asn_decl(|= )
+    make_asn_decl(^= )
 
     make_bop_decl(&&)
-    make_bop_decl(||)
+    make_bop_decl(|| )
 
 #undef make_uop_decl
 #undef make_bop_decl
 #undef make_asn_decl
+
+    inline explicit operator bool() const
+    {
+        return *this != 0;
+    }
 
 public:
 

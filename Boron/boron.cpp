@@ -594,15 +594,46 @@ Boron modpow(Boron base, Boron exponent, Boron modular)
     }
 }
 
-std::vector<Boron> factorize(Boron n)
+std::vector<Boron> factorize(Boron& n)
 {
     return std::vector<Boron>();
 }
 
-Boron gcd(Boron& a, Boron& b)
+Boron gcd(Boron& u, Boron& v)
 {
     return Boron();
+    if (u == v)
+    {
+        if (u == 0)
+        {
+            return 0;
+        }
+        return u;
+    }
 
+    if (~u & 1)
+    {
+        if (v & 1)
+        {
+            return gcd(y >> 1, v);
+        }
+        else
+        {
+            return gcd(u >> 1, v >> 1) << 1;
+        }
+
+        if (~v & 1)
+        {
+            return gcd(u, v >> 1);
+        }
+
+        if (u > v)
+        {
+            return gcd((u - v) >> 1, v);
+        }
+         
+        return gcd((v - u) >> 1, u);
+    }
 }
 
 Boron lcm(Boron& a, Boron& b)
