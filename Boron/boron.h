@@ -26,7 +26,8 @@ class SectionView
 
 public:
 	SectionView();
-	SectionView( SectionView& sv);
+	SectionView(std::vector<uint32_t> vec);
+	SectionView(SectionView& sv);
 	SectionView(int8_t n);
 	SectionView(uint8_t n);
 	SectionView(int16_t n);
@@ -35,7 +36,7 @@ public:
 	SectionView(uint32_t n);
 	SectionView(int64_t n);
 	SectionView(uint64_t n);
-	SectionView( char* s, int base = 10);
+	SectionView(char* s, int base = 10);
 	SectionView(std::string s, int base = 10);
 
 	~SectionView();
@@ -51,12 +52,18 @@ public:
 	uint32_t sectionAt(size_t offset);
 	void modifySection(size_t offset, uint32_t newValue);
 	void modifyHighestSection(uint32_t newValue);
+	void expandSection(uint32_t sec);
 	uint32_t bitAt(size_t sec, size_t offset);
 	uint32_t bitAt(size_t offset);
 	uint32_t highestSection();
 	std::vector<uint32_t> getData();
 	void eachSection(std::function<bool(size_t, uint32_t&)> execution);
 };
+
+inline SectionView construct(size_t size)
+{
+	return SectionView(std::vector<uint32_t>(size));
+}
 
 class Boron
 {
@@ -92,6 +99,7 @@ public:
 #define make_bop_decl(op) \
 	friend Boron operator##op##(Boron lhs, Boron rhs);
 
+	make_uop_decl(-)
 	make_bop_decl(+)
 	make_bop_decl(-)
 	make_bop_decl(*)

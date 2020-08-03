@@ -13,6 +13,12 @@ SectionView::SectionView()
 	data = { 0 };
 }
 
+SectionView::SectionView(std::vector<uint32_t> vec)
+{
+	data = std::move(vec);
+	sign = POS;
+}
+
 SectionView::SectionView( SectionView& sv)
 {
 	sign = sv.sign;
@@ -149,6 +155,11 @@ void SectionView::modifyHighestSection(uint32_t newValue)
 	data[0] = newValue;
 }
 
+void SectionView::expandSection(uint32_t sec)
+{
+	data.insert(data.begin(), sec);
+}
+
 uint32_t SectionView::bitAt(size_t sec, size_t offset)
 {
 	return get_bit(sectionAt(sec), offset);
@@ -260,12 +271,52 @@ make_uop_def(-)
 	return temp;
 }
 
+make_bop_def(+)
+{
+	size_t lhsLen = lhs.sectionView.sectionAmount(),
+		rhsLen = rhs.sectionView.sectionAmount();
+	SectionView temp = construct(std::max(lhsLen, rhsLen));
+	uint64_t carry = 0;
+
+	for (size_t i = 0, last = temp.sectionAmount(); i < last; i += 1)
+	{
+		if (i < lhsLen)
+		{
+			carry += lhs.sectionView.sectionAt(i);
+		}
+		if (i < rhsLen)
+		{
+			carry += rhs.sectionView.sectionAt(i);
+		}
+		temp.modifySection(i, static_cast<uint32_t>((carry)));
+		carry >>= 32;
+	}
+
+	if (carry)
+	{
+		temp.expandSection(carry);
+	}
+
+	return std::move(temp);
+}
+
+make_bop_def(-)
+make_bop_def(*)
+make_bop_def(/)
+make_bop_def(%)
+
 make_bop_def(<<)
 {
 	Boron temp = lhs;
 	temp <<= rhs;
 	return temp;
 }
+
+make_bop_def(>>)
+make_bop_def(&)
+make_bop_def(|)
+make_bop_def(^)
+make_uop_def(~)
 
 make_asn_def(<<=)
 {
