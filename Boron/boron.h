@@ -90,7 +90,7 @@ public:
 	friend Boron operator##op##(Boron lhs);
 
 #define make_bop_decl(op) \
-	friend Boron operator##op##(Boron lhs,  Boron rhs);
+	friend Boron operator##op##(Boron lhs, Boron rhs);
 
 	make_bop_decl(+)
 	make_bop_decl(-)
@@ -104,29 +104,28 @@ public:
 	make_bop_decl(^)
 	make_uop_decl(~)
 
-	make_bop_decl(+=)
-	make_bop_decl(-=)
-	make_bop_decl(*=)
-	make_bop_decl(/=)
-	make_bop_decl(%=)
-	make_bop_decl(<<=)
-	make_bop_decl(>>=)
-	make_bop_decl(&=)
-	make_bop_decl(|=)
-	make_bop_decl(^=)
+#define make_asn_decl(op) \
+	friend Boron& operator##op##(Boron lhs, Boron rhs);
+
+	make_asn_decl(+=)
+	make_asn_decl(-=)
+	make_asn_decl(*=)
+	make_asn_decl(/=)
+	make_asn_decl(%=)
+	make_asn_decl(<<=)
+	make_asn_decl(>>=)
+	make_asn_decl(&=)
+	make_asn_decl(|=)
+	make_asn_decl(^=)
 
 	make_bop_decl(&&)
 	make_bop_decl(||)
 
 #undef make_uop_decl
 #undef make_bop_decl
+#undef make_asn_decl
 
 public:
-	Division divmod(Boron rhs);
-	Decimal div(Boron precision = 8);
-	Boron pow(Boron rhs);
-	Boron modpow(Boron exponent, Boron modular);
-	std::vector<Boron> factorize(Boron n);
 
 public:
 	friend bool operator>(Boron lhs,  Boron rhs);
@@ -136,6 +135,8 @@ public:
 	friend bool operator==(Boron lhs,  Boron rhs);
 	friend bool operator!=(Boron lhs,  Boron rhs);
 
+	friend std::vector<Boron> factorize(Boron& n);
+	friend Boron modpow(Boron base, Boron exponent, Boron modular);
 	friend Boron pow(Boron& a, Boron& b);
 	friend Boron gcd(Boron& a, Boron& b);
 	friend Boron lcm(Boron& a, Boron& b);
@@ -151,19 +152,19 @@ public:
 };
 
 // 获取数值 x 第 n 位的值
-constexpr inline uint32_t get_bit(unsigned x, unsigned n)
+constexpr inline uint32_t get_bit(uint32_t x, uint32_t n)
 {
 	return (x >> n) & 1;
 }
 
 // 将 x 第 n 位的值设置为 a
-constexpr inline uint32_t set_bit(unsigned x, unsigned n, unsigned a)
+constexpr inline uint32_t set_bit(uint32_t x, uint32_t n, uint32_t a)
 {
 	return x ^= (x & (1 << n)) ^ (a << n);
 }
 
 // 求 n 的二进制位数
-constexpr inline uint32_t length_of_bits(unsigned n)
+constexpr inline uint32_t length_of_bits(uint32_t n)
 {
 	int32_t pow_of_2[32] =
 	{

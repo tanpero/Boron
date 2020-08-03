@@ -3,6 +3,10 @@
 namespace boron
 {
 
+/*
+ * class SectionView
+ */
+
 SectionView::SectionView()
 {
 	sign = 0;
@@ -18,31 +22,31 @@ SectionView::SectionView( SectionView& sv)
 SectionView::SectionView(int8_t n)
 {
 	sign = n < 0;
-	data = { static_cast<unsigned>(std::abs(n)) };
+	data = { static_cast<uint32_t>(std::abs(n)) };
 }
 
 SectionView::SectionView(uint8_t n)
 {
 	sign = 0;
-	data = { static_cast<unsigned>(n) };
+	data = { static_cast<uint32_t>(n) };
 }
 
 SectionView::SectionView(int16_t n)
 {
 	sign = n < 0;
-	data = { static_cast<unsigned>(std::abs(n)) };
+	data = { static_cast<uint32_t>(std::abs(n)) };
 }
 
 SectionView::SectionView(uint16_t n)
 {
 	sign = 0;
-	data = { static_cast<unsigned>(n) };
+	data = { static_cast<uint32_t>(n) };
 }
 
 SectionView::SectionView(int32_t n)
 {
 	sign = n < 0;
-	data = { (unsigned)std::abs(n) };
+	data = { (uint32_t)std::abs(n) };
 }
 
 SectionView::SectionView(uint32_t n)
@@ -58,11 +62,11 @@ SectionView::SectionView(int64_t _n)
 	uint64_t criticalValue = (uint64_t)UINT_MAX;
 	if (n <= criticalValue)
 	{
-		data = { (unsigned)n };
+		data = { (uint32_t)n };
 	}
 	else
 	{
-		data = { (unsigned)n >> 32, (unsigned)n };
+		data = { (uint32_t)n >> 32, (uint32_t)n };
 	}
 }
 
@@ -72,15 +76,15 @@ SectionView::SectionView(uint64_t n)
 	uint64_t criticalValue = (uint64_t)UINT_MAX;
 	if (n <= criticalValue)
 	{
-		data = { (unsigned)n };
+		data = { (uint32_t)n };
 	}
 	else
 	{
-		data = { (unsigned)n >> 32, (unsigned)n };
+		data = { (uint32_t)n >> 32, (uint32_t)n };
 	}
 }
 
-SectionView::SectionView( char* s, int base)
+SectionView::SectionView(char* s, int base)
 {
 }
 
@@ -99,68 +103,6 @@ SectionView& SectionView::operator=( SectionView& sv)
 	return *this;
 }
 
-
-/*
-Boron Boron::operator+( Boron& rhs) 
-{
-	Boron temp = *this;
-	temp += rhs;
-	return temp;
-}
-*/
-
-/*
-Boron Boron::operator+=( Boron& rhs)
-{
-
-	 std::vector<unsigned>& lhs_data = data;
-	 std::vector<unsigned>& rhs_data = rhs.data;
-	std::vector<unsigned> result_data = { 0 };
-	size_t lhs_size = lhs_data.size();
-	size_t rhs_size = rhs_data.size();
-
-	if (sign == rhs.sign)
-	{
-
-		for (int i = 1; i <= std::min(lhs_size, rhs_size); i += 1)
-		{
-			unsigned lhs_section = lhs_data.at(lhs_size - i);
-			unsigned rhs_section = rhs_data.at(rhs_size - i);
-			unsigned result_section = result_data.at(result_data.size() - 1);
-
-			// 预测两 section 直接相加是否溢出
-			if (UINT_MAX - lhs_section > rhs_section)
-			{
-				// 最大值减去 lhs 段的差大于 rhs 段，则两段相加不会溢出
-				result_data.insert(result_data.begin(), lhs_section + rhs_section + result_section);
-			}
-			else
-			{
-				// 将两段的最左位清零，以完成其余位的加法
-				unsigned lhs_temp = lhs_section & (~(1 << 1)),
-					rhs_temp = rhs_section & (~(1 << 1)),
-					result_temp = lhs_temp + rhs_temp;
-
-				result_data.insert(result_data.begin(), result_temp);
-
-				// 向 result 的高位段进 1 位
-				result_data.insert(result_data.begin(), 1);
-
-			}
-		}
-
-		b.sign == b.sign || POS;
-
-	}
-	else
-	{
-		// TODO...
-	}
-
-	b.data = result_data;
-	return b;
-}
-*/
 
 void SectionView::clear()
 {
@@ -192,7 +134,7 @@ size_t SectionView::sectionAmount()
 }
 
 // 段的逻辑索引，而非在 vector 中的实际位置
-unsigned SectionView::sectionAt(size_t offset)
+uint32_t SectionView::sectionAt(size_t offset)
 {
 	return data.at(sectionAmount() - 1 - offset);
 }
@@ -207,12 +149,12 @@ void SectionView::modifyHighestSection(uint32_t newValue)
 	data[0] = newValue;
 }
 
-unsigned SectionView::bitAt(size_t sec, size_t offset)
+uint32_t SectionView::bitAt(size_t sec, size_t offset)
 {
 	return get_bit(sectionAt(sec), offset);
 }
 
-unsigned SectionView::bitAt(size_t offset)
+uint32_t SectionView::bitAt(size_t offset)
 {
 	if (offset < 32)
 	{
@@ -228,7 +170,7 @@ uint32_t SectionView::highestSection()
 	return sectionAt(sectionAmount() - 1);
 }
 
-std::vector<unsigned> SectionView::getData()
+std::vector<uint32_t> SectionView::getData()
 {
 	return data;
 }
@@ -245,26 +187,78 @@ void SectionView::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 }
 
 
-
-std::string Boron::toString(int base) 
+/*
+ * class Boron
+ */
+Boron::Boron()
 {
-	size_t amount = sectionView.sectionAmount();
-	if (amount == 1)
-	{
-		return std::to_string(sectionView.sectionAt(0));
-	}
-	std::string s;
-	sectionView.eachSection([&](size_t i, uint32_t& sec) -> bool
-		{
-			s = std::to_string(sec) + s;
-			return true;
-		});
-	return s;
 }
 
+Boron::Boron( SectionView& sv)
+{
+	sectionView = std::move(sv);
+}
+
+Boron::Boron(Boron& b)
+{
+	sectionView = std::move(b.sectionView);
+}
+
+Boron& Boron::operator=(Boron& b)
+{
+	*this = b;
+	return *this;
+}
+
+Boron::~Boron()
+{
+}
+
+/*
+ * 用于完成基本计算
+ */
+
+Boron& operator++(Boron& b)
+{
+	b += 1;
+	return b;
+}
+
+Boron& operator++(Boron& b, int)
+{
+	Boron& temp = b;
+	b += 1;
+	return temp;
+}
+
+Boron& operator--(Boron& b)
+{
+	b += 1;
+	return b;
+}
+
+Boron& operator--(Boron& b, int)
+{
+	Boron& temp = b;
+	b += 1;
+	return temp;
+}
+
+#define make_uop_def(op) \
+	Boron operator##op##(Boron lhs)
 
 #define make_bop_def(op) \
 	Boron operator##op##(Boron lhs, Boron rhs)
+
+#define make_asn_def(op) \
+	Boron& operator##op##(Boron lhs, Boron rhs)
+
+make_uop_def(-)
+{
+	Boron temp = lhs;
+	temp.sectionView.negate();
+	return temp;
+}
 
 make_bop_def(<<)
 {
@@ -273,7 +267,7 @@ make_bop_def(<<)
 	return temp;
 }
 
-make_bop_def(<<=)
+make_asn_def(<<=)
 {
 	auto lsv = lhs.sectionView;
 
@@ -311,96 +305,18 @@ make_bop_def(<<=)
 	}
 	else if (rhs <= 32)
 	{
-		lsv.eachSection([&](size_t i, uint32_t section) -> bool{
+		lsv.eachSection([&](size_t i, uint32_t section) -> bool {
 
 			// TODO...
 			return false;
-		});
+			});
 	}
 }
 
-Boron::Boron( SectionView& sv)
-{
-	sectionView = std::move(sv);
-}
 
-Boron::Boron( Boron& b)
-{
-	sectionView = std::move(b.sectionView);
-}
-
-Boron& Boron::operator=(Boron& b)
-{
-	*this = b;
-	return *this;
-}
-
-Boron::~Boron()
-{
-}
-
-Boron Boron::modpow(Boron exponent, Boron modular)
-{
-	Boron base = *this;
-	if (modular == 1)
-	{
-		return 0;
-	}
-	else
-	{
-		Boron r = 1;
-		base %= modular;
-		while (exponent > 0)
-		{
-			if (exponent % 2 == 1)
-			{
-				r = (r * base) % modular;
-			}
-			exponent >>= 1;
-			base = (base * base) % modular;
-		}
-		return r;
-	}
-}
-
-Boron gcd(Boron& a, Boron& b)
-{
-	return Boron();
-	
-}
-
-Boron& operator++(Boron& b)
-{
-	b += 1;
-	return b;
-}
-
-Boron& operator++(Boron& b, int)
-{
-	Boron& temp = b;
-	b += 1;
-	return temp;
-}
-
-Boron& operator--(Boron& b)
-{
-	b += 1;
-	return b;
-}
-
-Boron& operator--(Boron& b, int)
-{
-	Boron& temp = b;
-	b += 1;
-	return temp;
-}
-
-Boron& operator-( Boron& b)
-{
-	Boron temp = b;
-	temp.sectionView.negate();
-	return temp;
-}
+/*
+ * 用于比较数值关系
+ */
 
 bool operator>(Boron lhs, Boron rhs)
 {
@@ -476,5 +392,100 @@ bool operator!=(Boron lhs, Boron rhs)
 {
 	return !(lhs == rhs);
 }
+
+/*
+ * 用于完成进一步复杂计算、
+ */
+
+Boron pow(Boron& a, Boron& b)
+{
+	return Boron();
+}
+
+Boron modpow(Boron base, Boron exponent, Boron modular)
+{
+	if (modular == 1)
+	{
+		return 0;
+	}
+	else
+	{
+		Boron r = 1;
+		base %= modular;
+		while (exponent > 0)
+		{
+			if (exponent % 2 == 1)
+			{
+				r = (r * base) % modular;
+			}
+			exponent >>= 1;
+			base = (base * base) % modular;
+		}
+		return r;
+	}
+}
+
+std::vector<Boron> factorize(Boron n)
+{
+	return std::vector<Boron>();
+}
+
+Boron gcd(Boron& a, Boron& b)
+{
+	return Boron();
+
+}
+
+Boron lcm(Boron& a, Boron& b)
+{
+	return Boron();
+}
+
+Boron intSqrt(Boron& n)
+{
+	return Boron();
+}
+
+Boron sqrt(Boron& n, Boron& accuracy)
+{
+	return Boron();
+}
+
+Boron max(Boron& a, Boron& b)
+{
+	return Boron();
+}
+
+Boron min(Boron& a, Boron& b)
+{
+	return Boron();
+}
+
+/*
+ * 用于向外传递数值
+ */
+
+// TODO...
+std::string Boron::toString(int base)
+{
+	size_t amount = sectionView.sectionAmount();
+	if (amount == 1)
+	{
+		return std::to_string(sectionView.sectionAt(0));
+	}
+	std::string s;
+	sectionView.eachSection([&](size_t i, uint32_t& sec) -> bool
+		{
+			s = std::to_string(sec) + s;
+			return true;
+		});
+	return s;
+}
+
+uint32_t Boron::getUInt32()
+{
+	return sectionView.sectionAt(0);
+}
+
 
 }
