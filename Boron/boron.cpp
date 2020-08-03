@@ -301,9 +301,37 @@ make_bop_def(+)
 }
 
 make_bop_def(-)
+{
+	size_t lhsLen = lhs.sectionView.sectionAmount(),
+		rhsLen = rhs.sectionView.sectionAmount();
+	SectionView temp = construct(lhsLen);
+	int64_t borrow = 0;
+
+	for (size_t i = 0, last = temp.sectionAmount(); i < last; i += 1)
+	{
+		borrow += lhs.sectionView.sectionAt(i);
+		borrow -= (i < rhsLen) ? rhs.sectionView.sectionAt(i) : 0;
+		temp.modifySection(i, borrow);
+		borrow >>= 32;
+	}
+
+	return std::move(temp);
+}
+
 make_bop_def(*)
+{
+
+}
+
 make_bop_def(/)
+{
+
+}
+
 make_bop_def(%)
+{
+
+}
 
 make_bop_def(<<)
 {
@@ -313,10 +341,29 @@ make_bop_def(<<)
 }
 
 make_bop_def(>>)
+{
+
+}
+
 make_bop_def(&)
+{
+
+}
+
 make_bop_def(|)
+{
+
+}
+
 make_bop_def(^)
+{
+
+}
+
 make_uop_def(~)
+{
+
+}
 
 make_asn_def(<<=)
 {
