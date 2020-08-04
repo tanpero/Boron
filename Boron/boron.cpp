@@ -107,11 +107,8 @@ SectionView::~SectionView()
 
 SectionView& SectionView::operator=( SectionView& sv)
 {
-    if (*this != sv)
-    {
-        sign = sv.sign;
-        data = std::move(sv.data);
-    }
+    sign = sv.sign;
+    data = std::move(sv.data);
     return *this;
 }
 
@@ -210,6 +207,7 @@ void SectionView::eachSection(std::function<bool(size_t, uint32_t&)> execution)
 
 Boron::Boron()
 {
+    sectionView = SectionView();
 }
 
 Boron::Boron( SectionView& sv)
@@ -303,7 +301,7 @@ make_bop_def(+)
     {
         temp.expandSection(carry);
     }
-
+   
     return std::move(temp);
 }
 
