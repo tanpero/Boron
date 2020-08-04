@@ -48,7 +48,7 @@ public:
     void clear();
     void negate();
     size_t digits();
-    size_t sectionAmount();
+    size_t sectionAmount() const;
     uint32_t sectionAt(size_t offset);
     void modifySection(size_t offset, uint32_t newValue);
     void modifyHighestSection(uint32_t newValue);
@@ -105,44 +105,39 @@ public:
     make_bop_decl(+)
     make_bop_decl(-)
     make_bop_decl(*)
-    make_bop_decl(/ )
+    make_bop_decl(/)  // 整除
     make_bop_decl(%)
-    make_bop_decl(<< )
-    make_bop_decl(>> )
+    make_bop_decl(<<)
+    make_bop_decl(>>)
     make_bop_decl(&)
-    make_bop_decl(| )
+    make_bop_decl(|)
     make_bop_decl(^)
     make_uop_decl(~)
 
 #define make_asn_decl(op) \
     friend Boron& operator##op##(Boron lhs, Boron rhs);
 
-    make_asn_decl(+= )
-    make_asn_decl(-= )
-    make_asn_decl(*= )
-    make_asn_decl(/= )
-    make_asn_decl(%= )
-    make_asn_decl(<<= )
-    make_asn_decl(>>= )
-    make_asn_decl(&= )
-    make_asn_decl(|= )
-    make_asn_decl(^= )
+    make_asn_decl(+=)
+    make_asn_decl(-=)
+    make_asn_decl(*=)
+    make_asn_decl(/=)
+    make_asn_decl(%=)
+    make_asn_decl(<<=)
+    make_asn_decl(>>=)
+    make_asn_decl(&=)
+    make_asn_decl(|=)
+    make_asn_decl(^=)
 
     make_bop_decl(&&)
-    make_bop_decl(|| )
+    make_bop_decl(||)
 
 #undef make_uop_decl
 #undef make_bop_decl
 #undef make_asn_decl
 
-    constexpr inline explicit operator bool() const
+    inline explicit operator bool() const
     {
-        return *this != Boron(0);
-    }
-
-    constexpr inline operator char*() const
-    {
-        return const_cast<char*>(toString().c_str());
+        return *this != 0;
     }
 
 public:
@@ -155,22 +150,37 @@ public:
     friend bool operator==(Boron lhs,  Boron rhs);
     friend bool operator!=(Boron lhs,  Boron rhs);
 
+    // 向下取到最接近指定位的整数
+    friend Boron floor(Boron n, Boron precision);
+
+    // 向下取到最接近指定位的整数
+    friend Boron ceil(Boron n, Boron precision);
+
+    // 取到最接近指定位的整数
+    friend Boron round(Boron n, Boron precision);
+
+    // 同时得到余数与商
+    Division divmod(Boron& a, Boron& b);
+
+    // 得到浮点数
+    Decimal  div(Boron& a, Boron& b);
+
     friend std::vector<Boron> factorize(Boron& n);
     friend Boron modpow(Boron base, Boron exponent, Boron modular);
-    friend Boron pow(Boron& a, Boron& b);
-    friend Boron gcd(Boron& a, Boron& b);
-    friend Boron lcm(Boron& a, Boron& b);
-    friend Boron intSqrt(Boron& n);
-    friend Boron sqrt(Boron& n, Boron& accuracy);
-    friend Boron max(Boron& a, Boron& b);
-    friend Boron min(Boron& a, Boron& b);
+    friend Boron pow(Boron a, Boron b);
+    friend Boron gcd(Boron u, Boron v);
+    friend Boron lcm(Boron a, Boron b);
+    friend Boron intSqrt(Boron n);
+    friend Boron sqrt(Boron n, Boron accuracy);
+    friend Boron max(Boron a, Boron b);
+    friend Boron min(Boron a, Boron b);
 
     friend std::ostream& operator<<(std::ostream& os, Boron& b);
     friend std::istream& operator>>(std::istream& is, Boron& b);
 
 
 public:
-    std::string toString(int base = 10) const;
+    std::string toString(int base = 10);
     uint32_t getUInt32()                      ;
 };
 
@@ -222,6 +232,8 @@ constexpr inline uint32_t length_of_bits(uint32_t n)
         }
     }
 }
+
+const Boron ZERO = Boron();
 
 }
 

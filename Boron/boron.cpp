@@ -140,10 +140,10 @@ size_t SectionView::digits()
     }
 }
 
-size_t SectionView::sectionAmount()
+size_t SectionView::sectionAmount() const
 {
     return data.size();
-}
+} 
 
 // 段的逻辑索引，而非在 vector 中的实际位置
 uint32_t SectionView::sectionAt(size_t offset)
@@ -236,7 +236,7 @@ Boron::~Boron()
  * 用于完成基本计算
  */
 
-Boron& operator++(Boron b)
+Boron& operator++(Boron& b)
 {
     b += 1;
     return b;
@@ -562,11 +562,51 @@ bool operator!=(Boron lhs, Boron rhs)
     return !(lhs == rhs);
 }
 
+Boron floor(Boron n, Boron precision)
+{
+    if (precision <= ZERO)
+    {
+        return n;
+    }
+    Boron level = pow(10, precision);
+    n /= level;
+    n *= level;
+}
+
+Boron ceil(Boron n, Boron precision)
+{
+    if (precision <= ZERO)
+    {
+        return n;
+    }
+    Boron level = pow(10, precision);
+    n /= level;
+    n += 1;
+    n *= level;
+}
+
+Boron round(Boron n, Boron precision)
+{
+    if (precision <= ZERO)
+    {
+        return n;
+    }
+    Boron level1 = pow(10, precision - 1);
+    Boron level2 = pow(10, precision);
+    n /= level1;
+    if (n.toString().back() >= 0x35) // 若最后一位数字的 ASCII 值大于 '5' 的 ASCII 值
+    {
+        n += 10;
+    }
+    n /= 10;
+    n *= level2;
+}
+
 /*
  * 用于完成进一步复杂计算、
  */
 
-Boron pow(Boron& a, Boron& b)
+Boron pow(Boron a, Boron b = 2)
 {
     return Boron();
 }
@@ -581,7 +621,7 @@ Boron modpow(Boron base, Boron exponent, Boron modular)
     {
         Boron r = 1;
         base %= modular;
-        while (exponent > 0)
+        while (exponent > ZERO)
         {
             if (exponent % 2 == 1)
             {
@@ -599,11 +639,11 @@ std::vector<Boron> factorize(Boron& n)
     return std::vector<Boron>();
 }
 
-Boron gcd(Boron& u, Boron& v)
+Boron gcd(Boron u, Boron v)
 {
     if (u == v)
     {
-        if (u == Boron(0))
+        if (u == ZERO)
         {
             return 0;
         }
@@ -635,27 +675,27 @@ Boron gcd(Boron& u, Boron& v)
     return gcd((v - u) >> 1, u);
 }
 
-Boron lcm(Boron& a, Boron& b)
+Boron lcm(Boron a, Boron b)
 {
     return Boron();
 }
 
-Boron intSqrt(Boron& n)
+Boron intSqrt(Boron n)
 {
     return Boron();
 }
 
-Boron sqrt(Boron& n, Boron& accuracy)
+Boron sqrt(Boron n, Boron accuracy)
 {
     return Boron();
 }
 
-Boron max(Boron& a, Boron& b)
+Boron max(Boron a, Boron b)
 {
     return Boron();
 }
 
-Boron min(Boron& a, Boron& b)
+Boron min(Boron a, Boron b)
 {
     return Boron();
 }
@@ -663,6 +703,7 @@ Boron min(Boron& a, Boron& b)
 std::ostream& operator<<(std::ostream& os, Boron& b)
 {
     os << b.toString();
+    return os;
 }
 
 std::istream& operator>>(std::istream& is, Boron& b)
@@ -685,7 +726,7 @@ std::istream& operator>>(std::istream& is, Boron& b)
  */
 
 // TODO...
-std::string Boron::toString(int base) const
+std::string Boron::toString(int base)
 {
     size_t amount = sectionView.sectionAmount();
     if (amount == 1)
