@@ -217,9 +217,9 @@ Boron::Boron( SectionView& sv)
     sectionView = std::move(sv);
 }
 
-Boron::Boron(Boron& b)
+Boron::Boron(const Boron& b)
 {
-    sectionView = std::move(b.sectionView);
+    sectionView = const_cast<SectionView&>(b.sectionView);
 }
 
 Boron& Boron::operator=(Boron& b)

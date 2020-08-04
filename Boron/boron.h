@@ -74,7 +74,6 @@ public:
 public:
     Boron();
     Boron(SectionView& sv);
-    Boron(Boron& b);
     Boron(const Boron& b);
 
     Boron(int8_t n) : sectionView(n) {}
