@@ -21,11 +21,8 @@ SectionView::SectionView(std::vector<uint32_t> vec)
 
 SectionView::SectionView(SectionView& sv)
 {
-    if (*this != sv)
-    {
-        data = std::move(sv.data);
-        sign = sv.sign;
-    }
+    data = std::move(sv.data);
+    sign = sv.sign;
 }
               
 SectionView::SectionView(int8_t n)
@@ -325,8 +322,16 @@ make_bop_def(-)
 
 make_bop_def(*)
 {
+    SectionView lsv = lhs.sectionView,
+        rsv = rhs.sectionView;
+    size_t lsz = lsv.sectionAmount(), rsz = rsv.sectionAmount();
+    Boron llen = (lsz - 1) * 32 + length_of_bits(lsv.highestSection()),
+        rlen = (rsz - 1) * 32 + length_of_bits(rsv.highestSection());
+    if (max(llen, rlen) <= 16)
+    {
+        return lsv.sectionAt(0) * rsv.sectionAt(0);
+    }
 
-    return Boron();
 }
 
 make_bop_def(/)
@@ -569,6 +574,7 @@ Boron floor(Boron n, Boron precision)
     Boron level = pow(10, precision);
     n /= level;
     n *= level;
+    return n;
 }
 
 Boron ceil(Boron n, Boron precision)
@@ -581,6 +587,7 @@ Boron ceil(Boron n, Boron precision)
     n /= level;
     n += 1;
     n *= level;
+    return n;
 }
 
 Boron round(Boron n, Boron precision)
@@ -598,6 +605,7 @@ Boron round(Boron n, Boron precision)
     }
     n /= 10;
     n *= level2;
+    return n;
 }
 
 /*
